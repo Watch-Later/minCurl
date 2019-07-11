@@ -2,7 +2,6 @@
 #include <QByteArray>
 #include <curl/curl.h>
 #include <QString>
-#include "common.h"
 size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp) {
 	size_t realsize = size * nmemb;
 	auto   buffer      = static_cast<QByteArray*>(userp);
@@ -25,7 +24,7 @@ CURLTiming curlTimer(CURLTiming& timing, CURL *curl) {
 }
 
 QString CURLTiming::print() const {
-	auto line = QSL("total: %1 \t, sslReady: %2").arg(totalTime).arg(preTransfer);
+	auto line = QStringLiteral("total: %1 \t, sslReady: %2").arg(totalTime).arg(preTransfer);
 	return line;
 }
 
