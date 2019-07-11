@@ -2,7 +2,7 @@
 #include <QByteArray>
 #include <curl/curl.h>
 #include <QString>
-size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp) {
+size_t QBWriter(void* contents, size_t size, size_t nmemb, void* userp) {
 	size_t realsize = size * nmemb;
 	auto   buffer      = static_cast<QByteArray*>(userp);
 
@@ -11,6 +11,12 @@ size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* user
 	return realsize;
 }
 
+size_t STDWriter(void *contents, size_t size, size_t nmemb, void *userp) {
+	size_t realsize = size * nmemb;
+	auto   buffer      = static_cast<std::string*>(userp);
+	buffer->append(static_cast<char*>(contents), static_cast<unsigned long>(realsize));
+	return realsize;
+}
 
 CURLTiming curlTimer(CURLTiming& timing, CURL *curl) {
 	curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &timing.totalTime);
@@ -32,3 +38,5 @@ CURLTiming curlTimer(CURL *curl) {
 	CURLTiming timing;
 	return curlTimer(timing,curl);
 }
+
+

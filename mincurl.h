@@ -18,7 +18,9 @@ struct CURLTiming {
  * curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
  * finish!
  */ 
-size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp);
+size_t QBWriter(void* contents, size_t size, size_t nmemb, void* userp);
+//same but with std::string
+size_t STDWriter(void* contents, size_t size, size_t nmemb, void* userp);
 CURLTiming curlTimer(CURLTiming& timing, CURL *curl);
 CURLTiming curlTimer(CURL *curl);
 void printTime(const CURLTiming& timing, QString& response);
