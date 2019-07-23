@@ -5,9 +5,7 @@
 size_t QBWriter(void* contents, size_t size, size_t nmemb, void* userp) {
 	size_t realsize = size * nmemb;
 	auto   buffer      = static_cast<QByteArray*>(userp);
-
 	buffer->append(static_cast<char*>(contents), static_cast<int>(realsize));
-
 	return realsize;
 }
 

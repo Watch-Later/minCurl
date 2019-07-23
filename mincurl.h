@@ -16,6 +16,7 @@ struct CURLTiming {
 /* Use like this:
  * QByteArray response;
  * curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+ * curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, QBWriter);
  * finish!
  */ 
 size_t QBWriter(void* contents, size_t size, size_t nmemb, void* userp);
