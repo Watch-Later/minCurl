@@ -9,7 +9,6 @@ using namespace std;
 std::vector<std::map<std::string, std::string>> CURLpp::listOfErrors(NUM_OF_CURL_ERR);
 int                      CURLpp::error_counter = 0;
 std::mutex               CURLpp::error_mutex;
-std::vector<std::string> CURLpp::smtp_payload;
 
 /**
  * @brief CURLpp::perform
@@ -108,45 +107,40 @@ size_t CURLpp::writeMemoryCallback(void* contents, size_t size, size_t nmemb, vo
 
 size_t CURLpp::smtp_payload_source(void* ptr, size_t size, size_t nmemb, void* userp) {
 	struct upload_status* upload_ctx = (struct upload_status*)userp;
-	const char*           data       = nullptr;
 
 	if ((size == 0) || (nmemb == 0) || ((size * nmemb) < 1)) {
 		return 0;
 	}
+	auto upload_size = upload_ctx->smtp_payload.size();
+	auto to_read = size * nmemb;
+	to_read = min(to_read, upload_size - upload_ctx->bytes_read);
 
-	if (smtp_payload.size() <= (size_t)upload_ctx->lines_read) {
-		data = "\0";
-	} else {
-		data = smtp_payload.at(upload_ctx->lines_read).c_str();
-	}
+	auto begin = upload_ctx->smtp_payload.c_str() + upload_ctx->bytes_read;
 
-	if (data) {
-		size_t len = strlen(data);
-		memcpy(ptr, data, len);
-		upload_ctx->lines_read++;
+	memcpy(ptr, begin, to_read);
 
-		return len;
-	}
+	upload_ctx->bytes_read += to_read;
 
-	return 0;
+	return to_read;
 }
 
 void CURLpp::smtp_prepare_message() {
+	auto& smtp_payload = copia->upload_ctx.smtp_payload;
 	smtp_payload.clear();
-	smtp_payload.emplace_back("To: <" + copia->smtp_to + "> \r\n");
-	smtp_payload.emplace_back("From: \"Gaisensha\" <" + copia->smtp_from + "> \r\n");
+	smtp_payload.append("To: <" + copia->smtp_to + "> \r\n");
+	smtp_payload.append("From: \"Gaisensha\" <" + copia->smtp_from + "> \r\n");
 	//	smtp_payload.push_back("Cc:   \r\n");
-	smtp_payload.emplace_back("Subject: " + copia->smtp_subject + "\r\n");
-	smtp_payload.emplace_back("MIME-Version: 1.0\r\n");
-	smtp_payload.emplace_back("Content-Type: text/html; charset=UTF-8\r\n");
-	smtp_payload.emplace_back("\r\n");
-	smtp_payload.emplace_back(copia->smtp_message + "\r\n");
+	smtp_payload.append("Subject: " + copia->smtp_subject + "\r\n");
+	smtp_payload.append("MIME-Version: 1.0\r\n");
+	smtp_payload.append("Content-Type: text/html; charset=UTF-8\r\n");
+	smtp_payload.append("\r\n");
+	smtp_payload.append(copia->smtp_message + "\r\n");
 }
 
 bool CURLpp::smtp_send() {
 	smtp_prepare_message();
 
-	copia->upload_ctx.lines_read = 0;
+	copia->upload_ctx.bytes_read = 0;
 
 	log("smtp_to", copia->smtp_to);
 	log("smtp_message", copia->smtp_message);

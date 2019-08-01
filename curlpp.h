@@ -1,4 +1,4 @@
-﻿#ifndef CURLPP_H
+#ifndef CURLPP_H
 #define CURLPP_H
 
 #include <curl/curl.h>
@@ -20,7 +20,8 @@ struct CurlPPStruct {
 };
 
 struct upload_status {
-	int lines_read = 0;
+	int bytes_read = 0;
+	std::string smtp_payload;
 };
 
 /**
@@ -93,7 +94,6 @@ class CURLpp {
 	std::string                     lastResponse = "";
 	char*                           effectiveUrl = nullptr;
 	long                            http_code    = 0;
-	static std::vector<std::string> smtp_payload;
 
 	static std::mutex       error_mutex;
 	static vector_of_errors listOfErrors;
