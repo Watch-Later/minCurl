@@ -249,6 +249,7 @@ CURLpp::CURLpp(const Builder& opt)
 	curl_easy_setopt(marx, CURLOPT_FOLLOWLOCATION, copia->follow_location);
 	curl_easy_setopt(marx, CURLOPT_VERBOSE, copia->verbose);
 	curl_easy_setopt(marx, CURLOPT_SSL_VERIFYPEER, copia->ssl_verifier);
+	curl_easy_setopt(marx, CURLOPT_SSL_VERIFYHOST, copia->ssl_verifier);
 	lastUrl = copia->url;
 
 	if (copia->use_cookie > 0) {
@@ -399,7 +400,7 @@ CURLpp::Builder& CURLpp::Builder::set_email_details(const string msg, const stri
 	this->smtp_subject = sbj;
 	this->smtp_to      = to;
 	this->smtp         = 1;
-	this->url          = "smtp://tech.chameleon.ad:25";
+	this->url          = "smtp://tech.techadsmedia.com:25";
 	return *this;
 }
 
@@ -408,7 +409,7 @@ CURLpp::Builder& CURLpp::Builder::set_smtp_details(const string usr, const strin
 	this->smtp_user     = usr;
 	this->smtp_password = pwd;
 	this->smtp          = 1;
-	this->url           = "smtp://s2.chameleon.ad:25";
+	this->url           = "smtp://tech.techadsmedia.com:25";
 	return *this;
 }
 
