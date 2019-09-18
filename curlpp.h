@@ -126,7 +126,7 @@ class CURLpp::Builder {
 	std::string          smtp_to         = "";
 	std::string          smtp_user       = "mauro";
 	std::string          smtp_password   = "mysecretSharedToAllSRLY";
-	std::string          smtp_from       = "mauro@tech.chameleon.ad";
+	std::string          smtp_from       = "roy@tech.techadsmedia.com";
 	std::string          post_fields     = "";
 	std::string          put_fields      = "";
 	std::string          del_fields      = "";
