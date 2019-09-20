@@ -422,9 +422,6 @@ CURLpp CURLpp::Builder::build() {
 	return CURLpp(*this);
 }
 
-//defined (as empty) in function.cpp
-size_t FakeCurlWriter(void* contents, size_t size, size_t nmemb, void* userp);
-
 CurlHandlerWrapper::CurlHandlerWrapper(long timeout_in_milliseconds) {
 	handle = curl_easy_init();
 	if (handle) {
@@ -436,7 +433,6 @@ CurlHandlerWrapper::CurlHandlerWrapper(long timeout_in_milliseconds) {
 		curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 1);
 		//disable writing to stdout
 		curl_easy_setopt(handle, CURLOPT_WRITEDATA, (void*)nullptr);
-		curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, FakeCurlWriter);
 	}
 }
 
