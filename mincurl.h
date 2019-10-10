@@ -1,8 +1,8 @@
 #ifndef MINCURL_H
 #define MINCURL_H
-typedef void CURL;
+using CURL = void;
 class QString;
-typedef unsigned long int size_t;
+using size_t = unsigned long int;
 struct CURLTiming {
 	double totalTime = 0;
 	double dnsTime = 0;
