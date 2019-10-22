@@ -33,8 +33,8 @@ QString ErrorLog::logQuery(curlCall* call) {
 
 	// query
 	static const QString skel = R"EOD(
-	INSERT INTO TABLE %1.%2 SET
-	now = %3,
+	INSERT INTO %1.%2 SET
+	ts = %3,
 	totalTime = %4,
 	preTransfer = %5,
 	curlCode = %6,
@@ -54,7 +54,7 @@ QString ErrorLog::logQuery(curlCall* call) {
 			.arg(httpCode)
 			.arg(get)
 			.arg(post)
-			.arg(response)
+			.arg(truncatedResp)
 			.arg(sErrBuf);
 
 	return sql;
