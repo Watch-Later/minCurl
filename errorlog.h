@@ -4,15 +4,15 @@
 #include "mincurl.h"
 #include <curl/curl.h>
 #include <QString>
-#include "define.h"
 
 struct curlCall {
 	CURL* curl = nullptr;
 	CURLcode curlCode;
-	QString response = nullptr;
-	QString get = nullptr;
-	QString post = SQL_NULL;
+	QString response;
+	QString get;
+	QString post;
 	char errbuf[CURL_ERROR_SIZE]={0};
+	int category = 0;
 };
 
 class ErrorLog

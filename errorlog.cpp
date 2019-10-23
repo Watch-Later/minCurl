@@ -12,6 +12,7 @@ QString ErrorLog::logQuery(curlCall* call) {
 	auto post = call->post;
 	qint64     now         = getCurrentTS();
 	CURLTiming timing      = curlTimer(curl);
+	// seconds
 	double     totalTime   = timing.totalTime;
 	double     preTransfer = timing.preTransfer;
 
@@ -42,7 +43,8 @@ QString ErrorLog::logQuery(curlCall* call) {
 	get = '%8',
 	post = '%9',
 	response = '%10',
-	errBuf = '%11'
+	errBuf = '%11',
+	category = %12
 )EOD";
 
 	auto sql = skel.arg(db)
@@ -55,7 +57,8 @@ QString ErrorLog::logQuery(curlCall* call) {
 			.arg(get)
 			.arg(post)
 			.arg(truncatedResp)
-			.arg(sErrBuf);
+			.arg(sErrBuf)
+			.arg(call->category);
 
 	return sql;
 }
