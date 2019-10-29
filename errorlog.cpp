@@ -10,7 +10,8 @@ QString ErrorLog::logQuery(curlCall* call) {
 	auto       response = call->response;
 	auto       get      = call->get;
 	auto       post     = call->post;
-	qint64     now      = getCurrentTS();
+	// milliseconds
+	qint64     now      = getCurrentMTS();
 	CURLTiming timing   = curlTimer(curl);
 	// seconds
 	double totalTime   = timing.totalTime;
