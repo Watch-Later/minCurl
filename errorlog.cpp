@@ -1,26 +1,26 @@
 #include "errorlog.h"
 #include "funkz.h"
 
-int            ErrorLog::truncatedResponseLength = 100;
-QString ErrorLog::db                                = "db";
-QString ErrorLog::table                             = "table";
+int     ErrorLog::truncatedResponseLength = 100;
+QString ErrorLog::db                      = "db";
+QString ErrorLog::table                   = "table";
 
 QString ErrorLog::logQuery(curlCall* call) {
-	auto curl = call->curl;
-	auto response = call->response;
-	auto get = call->get;
-	auto post = call->post;
-	qint64     now         = getCurrentTS();
-	CURLTiming timing      = curlTimer(curl);
+	auto       curl     = call->curl;
+	auto       response = call->response;
+	auto       get      = call->get;
+	auto       post     = call->post;
+	qint64     now      = getCurrentTS();
+	CURLTiming timing   = curlTimer(curl);
 	// seconds
-	double     totalTime   = timing.totalTime;
-	double     preTransfer = timing.preTransfer;
+	double totalTime   = timing.totalTime;
+	double preTransfer = timing.preTransfer;
 
 	long httpCode;
-	auto res      = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+	auto res = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 	if (res != CURLE_OK) {
 		qWarning().noquote() << "curl_easy_getinfo() didn't return the curl code.\n"
-				   << QStacker();
+		                     << QStacker();
 	}
 
 	QString truncatedResp = response.left(truncatedResponseLength);
@@ -48,17 +48,17 @@ QString ErrorLog::logQuery(curlCall* call) {
 )EOD";
 
 	auto sql = skel.arg(db)
-			.arg(table)
-			.arg(now)
-			.arg(totalTime)
-			.arg(preTransfer)
-			.arg(call->curlCode)
-			.arg(httpCode)
-			.arg(get)
-			.arg(post)
-			.arg(truncatedResp)
-			.arg(sErrBuf)
-			.arg(call->category);
+	               .arg(table)
+	               .arg(now)
+	               .arg(totalTime)
+	               .arg(preTransfer)
+	               .arg(call->curlCode)
+	               .arg(httpCode)
+	               .arg(get)
+	               .arg(post)
+	               .arg(truncatedResp)
+	               .arg(sErrBuf)
+	               .arg(call->category);
 
 	return sql;
 }
