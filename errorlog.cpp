@@ -1,5 +1,6 @@
 #include "errorlog.h"
-#include "funkz.h"
+#include <QDateTime>
+#include <QDebug>
 
 int     ErrorLog::truncatedResponseLength = 100;
 QString ErrorLog::db                      = "db";
@@ -20,15 +21,14 @@ QString ErrorLog::logQuery(curlCall* call) {
 	long httpCode;
 	auto res = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 	if (res != CURLE_OK) {
-		qWarning().noquote() << "curl_easy_getinfo() didn't return the curl code.\n"
-		                     << QStacker();
+		qCritical().noquote() << "curl_easy_getinfo() didn't return the curl code.\n";
 	}
 
 	QString truncatedResp = response.left(truncatedResponseLength);
 
 	QString sErrBuf;
 	if (call->errbuf[0] == '\0') {
-		sErrBuf = SQL_NULL;
+		sErrBuf = QString("NULL");
 	} else {
 		sErrBuf = call->errbuf;
 	}
