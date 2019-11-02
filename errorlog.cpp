@@ -1,10 +1,6 @@
 #include "errorlog.h"
 #include "funkz.h"
 
-int            ErrorLog::truncatedResponseLength = 100;
-QString ErrorLog::db                                = "db";
-QString ErrorLog::table                             = "table";
-
 QString ErrorLog::logQuery(curlCall* call) {
 	auto curl = call->curl;
 	auto response = call->response;
@@ -54,8 +50,8 @@ QString ErrorLog::logQuery(curlCall* call) {
 			.arg(preTransfer)
 			.arg(call->curlCode)
 			.arg(httpCode)
-			.arg(get)
-			.arg(post)
+			.arg(QString(get.toBase64()))
+			.arg(QString(post.toBase64()))
 			.arg(truncatedResp)
 			.arg(sErrBuf)
 			.arg(call->category);
