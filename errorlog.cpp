@@ -1,29 +1,30 @@
 #include "errorlog.h"
-#include "funkz.h"
+#include <QDateTime>
+#include <QDebug>
 
 QString ErrorLog::logQuery(curlCall* call) {
-	auto curl = call->curl;
-	auto response = call->response;
-	auto get = call->get;
-	auto post = call->post;
-	qint64     now         = getCurrentTS();
-	CURLTiming timing      = curlTimer(curl);
+	auto       curl     = call->curl;
+	auto       response = call->response;
+	auto       get      = call->get;
+	auto       post     = call->post;
+	// milliseconds
+	qint64     now      = QDateTime::currentMSecsSinceEpoch();
+	CURLTiming timing   = curlTimer(curl);
 	// seconds
-	double     totalTime   = timing.totalTime;
-	double     preTransfer = timing.preTransfer;
+	double totalTime   = timing.totalTime;
+	double preTransfer = timing.preTransfer;
 
 	long httpCode;
-	auto res      = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+	auto res = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 	if (res != CURLE_OK) {
-		qWarning().noquote() << "curl_easy_getinfo() didn't return the curl code.\n"
-				   << QStacker();
+		qCritical().noquote() << "curl_easy_getinfo() didn't return the curl code.\n";
 	}
 
 	QString truncatedResp = response.left(truncatedResponseLength);
 
 	QString sErrBuf;
 	if (call->errbuf[0] == '\0') {
-		sErrBuf = SQL_NULL;
+		sErrBuf = QString("NULL");
 	} else {
 		sErrBuf = call->errbuf;
 	}
