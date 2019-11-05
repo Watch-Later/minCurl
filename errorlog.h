@@ -6,18 +6,18 @@
 #include <curl/curl.h>
 
 struct curlCall {
-	CURL*    curl = nullptr;
-	CURLcode curlCode;
-	QString  response;
-	QString  get;
-	QString  post;
-	char     errbuf[CURL_ERROR_SIZE] = {0};
-	int      category                = 0;
+	CURL*      curl = nullptr;
+	CURLcode   curlCode;
+	QByteArray response;
+	QByteArray get;
+	QByteArray post;
+	char       errbuf[CURL_ERROR_SIZE] = {0};
+	int        category                = 0;
 };
 
 class ErrorLog {
       public:
-	QString logQuery(curlCall* call);
+	QString logQuery(const curlCall* call);
 
 	static QString db;
 	static QString table;

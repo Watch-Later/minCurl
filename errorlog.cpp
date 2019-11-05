@@ -6,7 +6,11 @@ int     ErrorLog::truncatedResponseLength = 100;
 QString ErrorLog::db                      = "db";
 QString ErrorLog::table                   = "table";
 
-QString ErrorLog::logQuery(curlCall* call) {
+QString base64this_copy(const QByteArray& param) {
+	return "FROM_BASE64('" + param.toBase64() + "')";
+}
+
+QString ErrorLog::logQuery(const curlCall* call) {
 	auto       curl     = call->curl;
 	auto       response = call->response;
 	auto       get      = call->get;
@@ -24,11 +28,11 @@ QString ErrorLog::logQuery(curlCall* call) {
 		qCritical().noquote() << "curl_easy_getinfo() didn't return the curl code.\n";
 	}
 
-	QString truncatedResp = response.left(truncatedResponseLength);
+	QByteArray truncatedResp = response.left(truncatedResponseLength);
 
-	QString sErrBuf;
+	QByteArray sErrBuf;
 	if (call->errbuf[0] == '\0') {
-		sErrBuf = QString("NULL");
+		sErrBuf = "NULL";
 	} else {
 		sErrBuf = call->errbuf;
 	}
@@ -41,10 +45,10 @@ QString ErrorLog::logQuery(curlCall* call) {
 	preTransfer = %5,
 	curlCode = %6,
 	httpCode = %7,
-	get = '%8',
-	post = '%9',
-	response = '%10',
-	errBuf = '%11',
+	get = %8,
+	post = %9,
+	response = %10,
+	errBuf = %11,
 	category = %12
 )EOD";
 
@@ -55,10 +59,10 @@ QString ErrorLog::logQuery(curlCall* call) {
 	               .arg(preTransfer)
 	               .arg(call->curlCode)
 	               .arg(httpCode)
-	               .arg(get)
-	               .arg(post)
-	               .arg(truncatedResp)
-	               .arg(sErrBuf)
+	               .arg(base64this_copy(get))
+	               .arg(base64this_copy(post))
+	               .arg(base64this_copy(truncatedResp))
+	               .arg(base64this_copy(sErrBuf))
 	               .arg(call->category);
 
 	return sql;
