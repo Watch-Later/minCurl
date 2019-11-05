@@ -2,9 +2,6 @@
 #include <QDateTime>
 #include <QDebug>
 
-int     ErrorLog::truncatedResponseLength = 100;
-QString ErrorLog::db                      = "db";
-QString ErrorLog::table                   = "table";
 
 QString base64this_copy(const QByteArray& param) {
 	return "FROM_BASE64('" + param.toBase64() + "')";
@@ -64,6 +61,5 @@ QString ErrorLog::logQuery(const curlCall* call) {
 	               .arg(base64this_copy(truncatedResp))
 	               .arg(base64this_copy(sErrBuf))
 	               .arg(call->category);
-
 	return sql;
 }

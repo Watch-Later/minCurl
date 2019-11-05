@@ -19,9 +19,9 @@ class ErrorLog {
       public:
 	QString logQuery(const curlCall* call);
 
-	static QString db;
-	static QString table;
-	static int     truncatedResponseLength;
+	QString db                      = "set me";
+	QString table                   = "set me";
+	int     truncatedResponseLength = 100;
 };
 
 #endif // ERRORLOG_H
