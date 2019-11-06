@@ -73,6 +73,7 @@ class CURLpp {
 	std::string getLastResponse() const;
 	void setUrl(const std::string& url);
 	void addHeader(const std::string& header);
+	void resetHeader();
 	void setPost(const std::string& post);
 	CURLpp(const CURLpp::Builder& opt);
 	CURL* getMarx() const;

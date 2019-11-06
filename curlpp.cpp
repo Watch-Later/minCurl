@@ -7,8 +7,8 @@
 using namespace std;
 
 std::vector<std::map<std::string, std::string>> CURLpp::listOfErrors(NUM_OF_CURL_ERR);
-int                      CURLpp::error_counter = 0;
-std::mutex               CURLpp::error_mutex;
+int                                             CURLpp::error_counter = 0;
+std::mutex                                      CURLpp::error_mutex;
 
 /**
  * @brief CURLpp::perform
@@ -34,7 +34,7 @@ std::string CURLpp::perform() {
 
 	if (res == CURLE_OK) {
 		curl_easy_getinfo(marx, CURLINFO_RESPONSE_CODE, &http_code);
-		curl_easy_getinfo(marx, CURLINFO_EFFECTIVE_URL , &effectiveUrl);
+		curl_easy_getinfo(marx, CURLINFO_EFFECTIVE_URL, &effectiveUrl);
 		if (http_code == 200) {
 			if (chunk.size > 0) {
 				response.append(chunk.memory, chunk.size);
@@ -58,9 +58,9 @@ std::string CURLpp::perform() {
 #endif
 
 	if (lastError != "noerr") {
-		std::lock_guard<std::mutex> el_gringo(error_mutex);
+		std::lock_guard<std::mutex>        el_gringo(error_mutex);
 		std::map<std::string, std::string> error;
-		std::time_t c_ts = std::time(nullptr);
+		std::time_t                        c_ts = std::time(nullptr);
 		error.insert(std::pair<std::string, std::string>("time", std::asctime(std::localtime(&c_ts))));
 		error.insert(std::pair<std::string, std::string>("error", lastError));
 		listOfErrors[error_counter++] = error;
@@ -112,8 +112,8 @@ size_t CURLpp::smtp_payload_source(void* ptr, size_t size, size_t nmemb, void* u
 		return 0;
 	}
 	auto upload_size = upload_ctx->smtp_payload.size();
-	auto to_read = size * nmemb;
-	to_read = min(to_read, upload_size - upload_ctx->bytes_read);
+	auto to_read     = size * nmemb;
+	to_read          = min(to_read, upload_size - upload_ctx->bytes_read);
 
 	auto begin = upload_ctx->smtp_payload.c_str() + upload_ctx->bytes_read;
 
@@ -188,6 +188,11 @@ void CURLpp::addHeader(const string& header) {
 	curl_easy_setopt(marx, CURLOPT_HTTPHEADER, copia->http_header);
 }
 
+void CURLpp::resetHeader() {
+	curl_slist_free_all(copia->http_header);
+	copia->http_header = nullptr;
+}
+
 void CURLpp::setPost(const std::string& post) {
 	curl_easy_setopt(marx, CURLOPT_POST, 1);
 	curl_easy_setopt(marx, CURLOPT_POSTFIELDS, post.c_str());
@@ -203,9 +208,8 @@ std::string CURLpp::getLastUrl() const {
 	return lastUrl;
 }
 
-string CURLpp::getEffectiveUrl() const
-{
-	if(effectiveUrl == nullptr){
+string CURLpp::getEffectiveUrl() const {
+	if (effectiveUrl == nullptr) {
 		return "";
 	}
 	return effectiveUrl;
@@ -413,7 +417,7 @@ CURLpp::Builder& CURLpp::Builder::set_smtp_details(const string usr, const strin
 	return *this;
 }
 
-CURLpp::Builder& CURLpp::Builder::set_ssl_verifier(const int flag){
+CURLpp::Builder& CURLpp::Builder::set_ssl_verifier(const int flag) {
 	this->ssl_verifier = flag;
 	return *this;
 }
