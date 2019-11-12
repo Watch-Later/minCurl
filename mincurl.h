@@ -3,6 +3,8 @@
 using CURL = void;
 class QString;
 using size_t = unsigned long int;
+class QByteArray;
+
 struct CURLTiming {
 	double  totalTime      = 0;
 	double  dnsTime        = 0;
@@ -26,4 +28,5 @@ CURLTiming curlTimer(CURLTiming& timing, CURL* curl);
 CURLTiming curlTimer(CURL* curl);
 void       printTime(const CURLTiming& timing, QString& response);
 
+QByteArray urlGetContent(const QByteArray& url, bool quiet = false);
 #endif // MINCURL_H
