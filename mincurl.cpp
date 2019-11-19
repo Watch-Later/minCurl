@@ -11,10 +11,9 @@ size_t QBWriter(void* contents, size_t size, size_t nmemb, void* userp) {
 	return realsize;
 }
 
-
-size_t FakeCurlWriter(void *contents, size_t size, size_t nmemb, void *userp){
-	(void) contents;
-	(void) userp;
+size_t FakeCurlWriter(void* contents, size_t size, size_t nmemb, void* userp) {
+	(void)contents;
+	(void)userp;
 	size_t realsize = size * nmemb;
 	return realsize;
 }
@@ -47,11 +46,11 @@ CURLTiming curlTimer(CURL* curl) {
 	return curlTimer(timing, curl);
 }
 
-QByteArray urlGetContent(const QByteArray& url, bool quiet, CURL *curl) {
+QByteArray urlGetContent(const QByteArray& url, bool quiet, CURL* curl) {
 	char       errbuf[CURL_ERROR_SIZE] = {0};
 	QByteArray response;
-	CURL* useMe = curl;
-	if(!useMe){
+	CURL*      useMe = curl;
+	if (!useMe) {
 		useMe = curl_easy_init();
 		curl_easy_setopt(useMe, CURLOPT_TIMEOUT, 60); //1 minute
 	}
@@ -69,10 +68,9 @@ QByteArray urlGetContent(const QByteArray& url, bool quiet, CURL *curl) {
 		qDebug().noquote() << "For:" << url << "\n " << errbuf;
 	}
 
-	if(!curl){ //IF a local instance was used
+	if (!curl) { //IF a local instance was used
 		curl_easy_cleanup(useMe);
 	}
 
 	return response;
 }
-

@@ -38,5 +38,5 @@ void       printTime(const CURLTiming& timing, QString& response);
  * @param curl let use an already bootstrapped curl instance (header / cookie)
  * @return
  */
-QByteArray urlGetContent(const QByteArray& url, bool quiet = false, CURL* curl=nullptr);
+QByteArray urlGetContent(const QByteArray& url, bool quiet = false, CURL* curl = nullptr);
 #endif // MINCURL_H
