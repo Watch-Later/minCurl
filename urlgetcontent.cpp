@@ -32,23 +32,32 @@ QByteArray UrlGetContent::execute(ErrorLog* eLog) {
 	curl_easy_setopt(useMe, CURLOPT_WRITEDATA, &response);
 	curl_easy_setopt(useMe, CURLOPT_ERRORBUFFER, errbuf);
 
-	callPerformed = true;
-	curlCode = curl_easy_perform(useMe);
+	for (uint i = 0; i < retryNum; ++i) {
+		curlCode = curl_easy_perform(useMe);
+		callPerformed = true;
 
-	if (curlCode != CURLE_OK && !quiet) {
-		qDebug().noquote() << "For:" << url << "\n " << errbuf;
+		if (curlCode != CURLE_OK && !quiet) {
+			qDebug().noquote() << "For:" << url << "\n " << errbuf;
+		}
+
+		if (eLog) {
+			curlCall call;
+			call.response = response;
+			call.curl     = useMe;
+			call.get      = url;
+			call.category = category;
+			call.curlCode = curlCode;
+			strcpy(call.errbuf, errbuf);
+
+			sql = eLog->logQuery(&call);
+		}
+
+		if (curlCode == CURLE_OK) {
+			break;
+		}
 	}
-
-	if (eLog) {
-		curlCall call;
-		call.response = response;
-		call.curl     = useMe;
-		call.get      = url;
-		call.category = category;
-		call.curlCode = curlCode;
-		strcpy(call.errbuf, errbuf);
-
-		sql = eLog->logQuery(&call);
+	if (curlCode != CURLE_OK) {
+		qWarning() << "max number (" << retryNum << ") of curl calls failed";
 	}
 
 	if (!curl) { //IF a local instance was used
