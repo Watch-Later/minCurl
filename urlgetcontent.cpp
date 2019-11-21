@@ -9,17 +9,16 @@ UrlGetContent::UrlGetContent()
 }
 
 // timeOut in seconds
-UrlGetContent::UrlGetContent(const QByteArray& url, bool quiet, int category, int timeOut, bool enableLog, CURL *curl)
+UrlGetContent::UrlGetContent(const QByteArray& url, bool quiet, int category, int timeOut, CURL *curl)
 {
 	this->url = url;
 	this->quiet = quiet;
 	this->category = category;
 	this->curl = curl;
 	this->timeOut = timeOut;
-	this->enableLog = enableLog;
 }
 
-QByteArray UrlGetContent::execute()
+QByteArray UrlGetContent::execute(ErrorLog* eLog)
 {
 	QByteArray response;
 	CURL*      useMe = curl;
@@ -27,44 +26,41 @@ QByteArray UrlGetContent::execute()
 		useMe = curl_easy_init();
 		curl_easy_setopt(useMe, CURLOPT_TIMEOUT, timeOut);
 	}
-
-	curlCall call;
-
-	ErrorLog l;
-	l.db      = "turboProp";
-	l.table   = "curlCalls";
-	call.curl = useMe;
-	call.get  = url;
-	call.category = category;
+	char errbuf[CURL_ERROR_SIZE] = {0};
 
 	//all those are needed
 	curl_easy_setopt(useMe, CURLOPT_POST, false);
 	curl_easy_setopt(useMe, CURLOPT_URL, url.constData());
 	curl_easy_setopt(useMe, CURLOPT_WRITEFUNCTION, QBWriter);
 	curl_easy_setopt(useMe, CURLOPT_SSL_VERIFYPEER, 0);
-	curl_easy_setopt(useMe, CURLOPT_WRITEDATA, &call.response);
-	curl_easy_setopt(useMe, CURLOPT_ERRORBUFFER, call.errbuf);
+	curl_easy_setopt(useMe, CURLOPT_WRITEDATA, &response);
+	curl_easy_setopt(useMe, CURLOPT_ERRORBUFFER, errbuf);
 
-	call.curlCode = curl_easy_perform(useMe);
+	auto curlCode = curl_easy_perform(useMe);
 
-#warning "test sql log"
-	auto log = l.logQuery(&call);
+	if (curlCode != CURLE_OK && !quiet) {
+		qDebug().noquote() << "For:" << url << "\n " << errbuf;
+	}
 
-	if (call.curlCode != CURLE_OK && !quiet) {
-		qDebug().noquote() << "For:" << url << "\n " << call.errbuf;
+	if (eLog) {
+	curlCall call;
+	call.response = response;
+	call.curl = useMe;
+	call.get  = url;
+	call.category = category;
+	call.curlCode = curlCode;
+	strcpy(call.errbuf, errbuf);
+
+	sql = eLog->logQuery(&call);
 	}
 
 	if (!curl) { //IF a local instance was used
 		curl_easy_cleanup(useMe);
 	}
 
-	return call.response;
+	return response;
 }
 
-QString UrlGetContent::getSqlLog()
-{
-	return sqlLog;
-}
 
 
 

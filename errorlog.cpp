@@ -11,7 +11,15 @@ QString ErrorLog::logQuery(const curlCall* call) {
 	auto       curl     = call->curl;
 	auto       response = call->response;
 	auto       get      = call->get;
-	auto       post     = call->post;
+
+	QByteArray post;
+	if (call->post.isEmpty()) {
+		post     = "NULL";
+	}
+	else {
+		post = call->post;
+	}
+
 	// milliseconds
 	qint64     now      = QDateTime::currentMSecsSinceEpoch();
 	CURLTiming timing   = curlTimer(curl);
@@ -25,8 +33,14 @@ QString ErrorLog::logQuery(const curlCall* call) {
 		qCritical().noquote() << "curl_easy_getinfo() didn't return the curl code.\n";
 	}
 
-	QByteArray truncatedResp = response.left(truncatedResponseLength);
+	QByteArray truncatedResp;
+	if(truncatedResponseLength > 0){
+			 truncatedResp = response.left(truncatedResponseLength);
+	}else{
+		truncatedResp = response;
+	}
 
+	
 	QByteArray sErrBuf;
 	if (call->errbuf[0] == '\0') {
 		sErrBuf = "NULL";
@@ -46,7 +60,7 @@ QString ErrorLog::logQuery(const curlCall* call) {
 	post = %9,
 	response = %10,
 	errBuf = %11,
-	category = %12
+	category = %12;
 )EOD";
 
 	auto sql = skel.arg(db)
