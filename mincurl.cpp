@@ -74,3 +74,8 @@ QByteArray urlGetContent(const QByteArray& url, bool quiet, CURL* curl) {
 
 	return response;
 }
+
+QByteArray urlGetContent(const QString& url, bool quiet, CURL* curl) {
+	auto u = url.toUtf8();
+	return urlGetContent(u, quiet, curl);
+}

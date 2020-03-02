@@ -39,4 +39,5 @@ void       printTime(const CURLTiming& timing, QString& response);
  * @return
  */
 QByteArray urlGetContent(const QByteArray& url, bool quiet = false, CURL* curl = nullptr);
+QByteArray urlGetContent(const QString& url, bool quiet = false, CURL* curl = nullptr);
 #endif // MINCURL_H
