@@ -31,6 +31,32 @@ CURLTiming curlTimer(CURLTiming& timing, CURL* curl);
 CURLTiming curlTimer(CURL* curl);
 void       printTime(const CURLTiming& timing, QString& response);
 
+//cry
+struct curl_slist;
+class CurlHeader{
+public:
+	~CurlHeader();
+	void add(QString header);
+	void add(QByteArray header);
+	void add(const char* header);
+	curl_slist *getChunk() const;
+
+private:
+	struct curl_slist *chunk = nullptr;
+};
+
+class CurlKeeper{
+public:
+	CurlKeeper();
+	~CurlKeeper();
+
+	CURL *get() const;
+
+private:
+	CURL* curl = nullptr;
+};
+
+
 /**
  * @brief urlGetContent
  * @param url

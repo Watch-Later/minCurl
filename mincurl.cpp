@@ -56,7 +56,6 @@ QByteArray urlGetContent(const QByteArray& url, bool quiet, CURL* curl) {
 	}
 
 	//all those are needed
-	curl_easy_setopt(useMe, CURLOPT_POST, false);
 	curl_easy_setopt(useMe, CURLOPT_URL, url.constData());
 	curl_easy_setopt(useMe, CURLOPT_WRITEFUNCTION, QBWriter);
 	curl_easy_setopt(useMe, CURLOPT_SSL_VERIFYPEER, 0);
@@ -78,4 +77,37 @@ QByteArray urlGetContent(const QByteArray& url, bool quiet, CURL* curl) {
 QByteArray urlGetContent(const QString& url, bool quiet, CURL* curl) {
 	auto u = url.toUtf8();
 	return urlGetContent(u, quiet, curl);
+}
+
+CurlHeader::~CurlHeader() {
+	curl_slist_free_all(chunk);
+}
+
+void CurlHeader::add(QString header) {
+	add(header.toUtf8());
+}
+
+void CurlHeader::add(QByteArray header) {
+	add(header.constData());
+}
+
+void CurlHeader::add(const char* header) {
+	chunk = curl_slist_append(chunk, header);
+}
+
+curl_slist* CurlHeader::getChunk() const {
+	return chunk;
+}
+
+CurlKeeper::CurlKeeper() {
+	curl = curl_easy_init();
+}
+
+CurlKeeper::~CurlKeeper() {
+	curl_easy_cleanup(curl);
+}
+
+CURL *CurlKeeper::get() const
+{
+    return curl;
 }
