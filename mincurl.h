@@ -1,5 +1,6 @@
-#ifndef MINCURL_H
-#define MINCURL_H
+#pragma once
+
+#include <QByteArray>
 using CURL = void;
 class QString;
 using size_t = unsigned long int;
@@ -33,29 +34,33 @@ void       printTime(const CURLTiming& timing, QString& response);
 
 //cry
 struct curl_slist;
-class CurlHeader{
-public:
+class CurlHeader {
+	  public:
 	~CurlHeader();
-	void add(QString header);
-	void add(QByteArray header);
-	void add(const char* header);
-	curl_slist *getChunk() const;
+	void        add(QString header);
+	void        add(QByteArray header);
+	void        add(const char* header);
+	curl_slist* getChunk() const;
 
-private:
-	struct curl_slist *chunk = nullptr;
+	  private:
+	struct curl_slist* chunk = nullptr;
 };
 
-class CurlKeeper{
-public:
+class CurlKeeper {
+	  public:
 	CurlKeeper();
 	~CurlKeeper();
 
-	CURL *get() const;
+	CURL* get() const;
 
-private:
+	  private:
 	CURL* curl = nullptr;
 };
 
+struct CurlCallResult{
+	QByteArray result;
+	bool ok = false;
+};
 
 /**
  * @brief urlGetContent
@@ -66,4 +71,5 @@ private:
  */
 QByteArray urlGetContent(const QByteArray& url, bool quiet = false, CURL* curl = nullptr);
 QByteArray urlGetContent(const QString& url, bool quiet = false, CURL* curl = nullptr);
-#endif // MINCURL_H
+
+CurlCallResult urlPostContent(const QByteArray& url, const QByteArray post, bool quiet = false, CURL* curl = nullptr);
