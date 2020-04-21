@@ -3,9 +3,6 @@
 #include "mincurl.h"
 #include <QDebug>
 
-UrlGetContent::UrlGetContent() {
-}
-
 // timeOut in seconds
 UrlGetContent::UrlGetContent(const QByteArray& url, bool quiet, int category, int timeOut, CURL* curl) {
 	this->url      = url;
@@ -21,14 +18,17 @@ QByteArray UrlGetContent::execute(ErrorLog* eLog) {
 	if (!useMe) {
 		useMe = curl_easy_init();
 		curl_easy_setopt(useMe, CURLOPT_TIMEOUT, timeOut);
+		//99.9% of the time is what we want
+		curl_easy_setopt(useMe, CURLOPT_SSL_VERIFYPEER, 0);
 	}
 	char errbuf[CURL_ERROR_SIZE] = {0};
 
-	//all those are needed
+	//why not ?
 	curl_easy_setopt(useMe, CURLOPT_POST, false);
+	
+	//Nothing cames to my mind that will ever change those 3
 	curl_easy_setopt(useMe, CURLOPT_URL, url.constData());
 	curl_easy_setopt(useMe, CURLOPT_WRITEFUNCTION, QBWriter);
-	curl_easy_setopt(useMe, CURLOPT_SSL_VERIFYPEER, 0);
 	curl_easy_setopt(useMe, CURLOPT_WRITEDATA, &response);
 	curl_easy_setopt(useMe, CURLOPT_ERRORBUFFER, errbuf);
 

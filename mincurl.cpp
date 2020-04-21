@@ -53,15 +53,15 @@ QByteArray urlGetContent(const QByteArray& url, bool quiet, CURL* curl) {
 	if (!useMe) {
 		useMe = curl_easy_init();
 		curl_easy_setopt(useMe, CURLOPT_TIMEOUT, 60); //1 minute
+		//all those are "needed"
+		curl_easy_setopt(useMe, CURLOPT_SSL_VERIFYPEER, 0);
 	}
-
-	//all those are needed
+	//Nothing cames to my mind that will ever change those 3
 	curl_easy_setopt(useMe, CURLOPT_URL, url.constData());
-	curl_easy_setopt(useMe, CURLOPT_WRITEFUNCTION, QBWriter);
-	curl_easy_setopt(useMe, CURLOPT_SSL_VERIFYPEER, 0);
 	curl_easy_setopt(useMe, CURLOPT_WRITEDATA, &response);
 	curl_easy_setopt(useMe, CURLOPT_ERRORBUFFER, errbuf);
-
+	curl_easy_setopt(useMe, CURLOPT_WRITEFUNCTION, QBWriter);
+	
 	auto res = curl_easy_perform(useMe);
 	if (res != CURLE_OK && !quiet) {
 		qCritical().noquote() << "For:" << url << "\n " << errbuf;
@@ -104,6 +104,8 @@ CurlKeeper::CurlKeeper() {
 }
 
 CurlKeeper::~CurlKeeper() {
+	//todo check usage of header or other stuff ?
+	//in theory you should use CurlHeader
 	curl_easy_cleanup(curl);
 }
 

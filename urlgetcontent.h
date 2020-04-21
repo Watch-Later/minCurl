@@ -8,7 +8,6 @@
 
 class UrlGetContent {
 	  public:
-	UrlGetContent();
 	UrlGetContent(const QByteArray& url, bool quiet, int category, int timeOut = 60, CURL* curl = nullptr);
 	QByteArray execute(ErrorLog* eLog = nullptr);
 	QString    sql;

@@ -30,7 +30,7 @@ QString ErrorLog::logQuery(const curlCall* call) {
 	long httpCode;
 	auto res = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 	if (res != CURLE_OK) {
-		qCritical().noquote() << "curl_easy_getinfo() didn't return the curl code.\n";
+		qWarning().noquote() << "curl_easy_getinfo() didn't return the curl code.\n";
 	}
 
 	QByteArray truncatedResp;
