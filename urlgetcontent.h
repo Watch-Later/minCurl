@@ -15,7 +15,9 @@ class UrlGetContent {
 	uint retryNum = 1;
 	bool curlOk() const;
 
-	  private:
+	CURLcode getCurlCode() const;
+	
+private:
 	QByteArray url;
 	bool       quiet    = false;
 	int        category = 0;

@@ -22,9 +22,6 @@ QByteArray UrlGetContent::execute(ErrorLog* eLog) {
 		curl_easy_setopt(useMe, CURLOPT_SSL_VERIFYPEER, 0);
 	}
 	char errbuf[CURL_ERROR_SIZE] = {0};
-
-	//why not ?
-	curl_easy_setopt(useMe, CURLOPT_POST, false);
 	
 	//Nothing cames to my mind that will ever change those 3
 	curl_easy_setopt(useMe, CURLOPT_URL, url.constData());
@@ -72,4 +69,9 @@ bool UrlGetContent::curlOk() const {
 		return true;
 	}
 	return false;
+}
+
+CURLcode UrlGetContent::getCurlCode() const
+{
+	return curlCode;
 }
