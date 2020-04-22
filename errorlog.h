@@ -3,6 +3,7 @@
 
 #include "mincurl.h"
 #include <QString>
+#include <QStringList>
 #include <curl/curl.h>
 
 struct curlCall {
@@ -17,11 +18,16 @@ struct curlCall {
 
 class ErrorLog {
       public:
-	QString logQuery(const curlCall* call);
-
-	QString db                      = "set me";
-	QString table                   = "set me";
-	int     truncatedResponseLength = 100;
+	QString     logQuery(const curlCall* call);
+	QStringList logList;
+	QString     db                      = "set me";
+	QString     table                   = "set me";
+	int         truncatedResponseLength = 100;
+	enum Format {
+		sql,
+		csv
+	};
+	Format format = Format::sql;
 };
 
 #endif // ERRORLOG_H

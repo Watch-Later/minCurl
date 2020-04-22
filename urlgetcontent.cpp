@@ -56,7 +56,7 @@ QByteArray UrlGetContent::execute(ErrorLog* eLog) {
 			break;
 		}
 	}
-	if (curlCode != CURLE_OK) {
+	if (curlCode != CURLE_OK && !quiet) {
 		qWarning() << "max number (" << retryNum << ") of curl calls failed for " << url;
 	}
 
