@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QString>
 #include <curl/curl.h>
-
+#include "QStacker/qstacker.h"
 size_t QBWriter(void* contents, size_t size, size_t nmemb, void* userp) {
 	size_t realsize = size * nmemb;
 	auto   buffer   = static_cast<QByteArray*>(userp);
@@ -64,7 +64,7 @@ QByteArray urlGetContent(const QByteArray& url, bool quiet, CURL* curl) {
 	
 	auto res = curl_easy_perform(useMe);
 	if (res != CURLE_OK && !quiet) {
-		qCritical().noquote() << "For:" << url << "\n " << errbuf;
+		qWarning().noquote() << "For:" << url << "\n " << errbuf << QStacker16Light();
 	}
 
 	if (!curl) { //IF a local instance was used

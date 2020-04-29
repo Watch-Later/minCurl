@@ -71,5 +71,5 @@ struct CurlCallResult{
  */
 QByteArray urlGetContent(const QByteArray& url, bool quiet = false, CURL* curl = nullptr);
 QByteArray urlGetContent(const QString& url, bool quiet = false, CURL* curl = nullptr);
-
+//TODO rifare la funzione e ritornare un oggetto composito per sapere se è andato a buon fine
 CurlCallResult urlPostContent(const QByteArray& url, const QByteArray post, bool quiet = false, CURL* curl = nullptr);
