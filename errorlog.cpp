@@ -92,4 +92,5 @@ QString ErrorLog::logQuery(const curlCall* call) {
 		return log;
 	} break;
 	}
+	return QString();
 }
