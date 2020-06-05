@@ -64,7 +64,7 @@ QByteArray urlGetContent(const QByteArray& url, bool quiet, CURL* curl) {
 	
 	auto res = curl_easy_perform(useMe);
 	if (res != CURLE_OK && !quiet) {
-		qWarning().noquote() << "For:" << url << "\n " << errbuf << QStacker16Light();
+		qDebug().noquote() << "For:" << url << "\n " << errbuf << QStacker16Light();
 	}
 
 	if (!curl) { //IF a local instance was used
