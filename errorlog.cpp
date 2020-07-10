@@ -19,7 +19,7 @@ QString ErrorLog::logQuery(const curlCall* call) {
 	}
 
 	// milliseconds
-	qint64     now    = QDateTime::currentMSecsSinceEpoch();
+	double     now    = QDateTime::currentMSecsSinceEpoch() / 1000.0;
 	CURLTiming timing = curlTimer(curl);
 	// seconds
 	double totalTime   = timing.totalTime;
