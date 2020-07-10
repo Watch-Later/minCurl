@@ -19,7 +19,7 @@ struct curlCall {
 class ErrorLog {
       public:
 	QString     logQuery(const curlCall* call);
-	QStringList logList;
+	QStringList logList{};
 	QString     db                      = "set me";
 	QString     table                   = "set me";
 	int         truncatedResponseLength = 100;
