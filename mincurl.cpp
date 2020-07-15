@@ -137,7 +137,7 @@ CurlCallResult urlPostContent(const QByteArray& url, const QByteArray post, bool
 	Header header;
 	auto   lines = QStringTokenizer{headers, u"\r\n"};
 	auto   c     = lines.toContainer();
-	qDebug() << c;
+	//qDebug() << c;
 	for (auto& line : lines) {
 		QString c = line.toString();
 		if (line.length() > 0) {
