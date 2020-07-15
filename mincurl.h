@@ -73,6 +73,7 @@ struct CurlCallResult {
 	Header  header;
 	//Keep raw as can be binary stuff
 	QByteArray result;
+	CURLTiming timing;
 	bool       ok = false;
 };
 

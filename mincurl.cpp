@@ -127,6 +127,12 @@ CurlCallResult urlPostContent(const QByteArray& url, const QByteArray post, bool
 	return result;
 }
 
+/**
+  why this stuff is not built in inside curl is a mistery...
+ * @brief parseHeader
+ * @param headers
+ * @return 
+ */
 [[nodiscard]] Header parseHeader(const QStringView headers) {
 	Header header;
 	auto   lines = QStringTokenizer{headers, u"\r\n"};
@@ -167,6 +173,7 @@ CurlCallResult urlGetContent2(const QByteArray& url, bool quiet, CURL* curl) {
 	curl_easy_setopt(useMe, CURLOPT_HEADERDATA, &final.headerRaw);
 
 	auto res = curl_easy_perform(useMe);
+	curlTimer(final.timing, useMe);
 	if (res != CURLE_OK && !quiet) {
 		qDebug().noquote() << "For:" << url << "\n " << errbuf << QStacker16Light();
 	}
@@ -181,7 +188,7 @@ CurlCallResult urlGetContent2(const QByteArray& url, bool quiet, CURL* curl) {
 
 bool CaseInsensitiveCompare::operator()(QStringView a, QStringView b) const noexcept {
 	//we have to provide the operator<=
-	return  a.compare(b, Qt::CaseInsensitive) < 1;
+	return a.compare(b, Qt::CaseInsensitive) < 1;
 }
 
 CurlCallResult::CurlCallResult() {
