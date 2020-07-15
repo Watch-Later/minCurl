@@ -1,10 +1,12 @@
 #pragma once
 
 #include <QByteArray>
+#include <QString>
+#include <map>
+
 using CURL = void;
 class QString;
 using size_t = unsigned long int;
-class QByteArray;
 
 struct CURLTiming {
 	double  totalTime      = 0;
@@ -25,9 +27,9 @@ size_t FakeCurlWriter(void* contents, size_t size, size_t nmemb, void* userp);
  * curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, QBWriter);
  * finish!
  */
-size_t QBWriter(void* contents, size_t size, size_t nmemb, void* userp);
+size_t QBWriter(void* contents, size_t size, size_t nmemb, QByteArray* userp);
 //same but with std::string
-size_t     STDWriter(void* contents, size_t size, size_t nmemb, void* userp);
+size_t     STDWriter(void* contents, size_t size, size_t nmemb, std::string* userp);
 CURLTiming curlTimer(CURLTiming& timing, CURL* curl);
 CURLTiming curlTimer(CURL* curl);
 void       printTime(const CURLTiming& timing, QString& response);
@@ -35,31 +37,43 @@ void       printTime(const CURLTiming& timing, QString& response);
 //cry
 struct curl_slist;
 class CurlHeader {
-	  public:
+      public:
 	~CurlHeader();
 	void        add(QString header);
 	void        add(QByteArray header);
 	void        add(const char* header);
 	curl_slist* getChunk() const;
 
-	  private:
+      private:
 	struct curl_slist* chunk = nullptr;
 };
 
 class CurlKeeper {
-	  public:
+      public:
 	CurlKeeper();
 	~CurlKeeper();
 
 	CURL* get() const;
 
-	  private:
+      private:
 	CURL* curl = nullptr;
 };
 
-struct CurlCallResult{
+//inspired from https://github.com/whoshuu/cpr/blob/master/include/cpr/cprtypes.h
+struct CaseInsensitiveCompare {
+	bool operator()(QStringView a, QStringView b) const noexcept;
+};
+using Header = std::map<QStringView, QStringView, CaseInsensitiveCompare>;
+struct CurlCallResult {
+	CurlCallResult();
+	QStringView status_line;
+	QStringView reason;
+	//used to keep alive all the QStringView
+	QString headerRaw;
+	Header  header;
+	//Keep raw as can be binary stuff
 	QByteArray result;
-	bool ok = false;
+	bool       ok = false;
 };
 
 /**
@@ -69,7 +83,8 @@ struct CurlCallResult{
  * @param curl let use an already bootstrapped curl instance (header / cookie)
  * @return
  */
-QByteArray urlGetContent(const QByteArray& url, bool quiet = false, CURL* curl = nullptr);
-QByteArray urlGetContent(const QString& url, bool quiet = false, CURL* curl = nullptr);
+QByteArray     urlGetContent(const QByteArray& url, bool quiet = false, CURL* curl = nullptr);
+QByteArray     urlGetContent(const QString& url, bool quiet = false, CURL* curl = nullptr);
+CurlCallResult urlGetContent2(const QByteArray& url, bool quiet = false, CURL* curl = nullptr);
 //TODO rifare la funzione e ritornare un oggetto composito per sapere se è andato a buon fine
 CurlCallResult urlPostContent(const QByteArray& url, const QByteArray post, bool quiet = false, CURL* curl = nullptr);

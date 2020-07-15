@@ -1,13 +1,20 @@
 #include "mincurl.h"
+#include "QStacker/qstacker.h"
+#include "qstringtokenizer.h"
 #include <QByteArray>
 #include <QDebug>
 #include <QString>
 #include <curl/curl.h>
-#include "QStacker/qstacker.h"
-size_t QBWriter(void* contents, size_t size, size_t nmemb, void* userp) {
+
+size_t QBWriter(void* contents, size_t size, size_t nmemb, QByteArray* userp) {
 	size_t realsize = size * nmemb;
-	auto   buffer   = static_cast<QByteArray*>(userp);
-	buffer->append(static_cast<char*>(contents), static_cast<int>(realsize));
+	userp->append(static_cast<char*>(contents), realsize);
+	return realsize;
+}
+
+size_t QSWriter(void* contents, size_t size, size_t nmemb, QString* userp) {
+	size_t realsize = size * nmemb;
+	userp->append(static_cast<char*>(contents));
 	return realsize;
 }
 
@@ -18,10 +25,9 @@ size_t FakeCurlWriter(void* contents, size_t size, size_t nmemb, void* userp) {
 	return realsize;
 }
 
-size_t STDWriter(void* contents, size_t size, size_t nmemb, void* userp) {
+size_t STDWriter(void* contents, size_t size, size_t nmemb, std::string* userp) {
 	size_t realsize = size * nmemb;
-	auto   buffer   = static_cast<std::string*>(userp);
-	buffer->append(static_cast<char*>(contents), static_cast<unsigned long>(realsize));
+	userp->append(static_cast<char*>(contents), realsize);
 	return realsize;
 }
 
@@ -47,31 +53,8 @@ CURLTiming curlTimer(CURL* curl) {
 }
 
 QByteArray urlGetContent(const QByteArray& url, bool quiet, CURL* curl) {
-	char       errbuf[CURL_ERROR_SIZE] = {0};
-	QByteArray response;
-	CURL*      useMe = curl;
-	if (!useMe) {
-		useMe = curl_easy_init();
-		curl_easy_setopt(useMe, CURLOPT_TIMEOUT, 60); //1 minute
-		//all those are "needed"
-		curl_easy_setopt(useMe, CURLOPT_SSL_VERIFYPEER, 0);
-	}
-	//Nothing cames to my mind that will ever change those 3
-	curl_easy_setopt(useMe, CURLOPT_URL, url.constData());
-	curl_easy_setopt(useMe, CURLOPT_WRITEDATA, &response);
-	curl_easy_setopt(useMe, CURLOPT_ERRORBUFFER, errbuf);
-	curl_easy_setopt(useMe, CURLOPT_WRITEFUNCTION, QBWriter);
-	
-	auto res = curl_easy_perform(useMe);
-	if (res != CURLE_OK && !quiet) {
-		qDebug().noquote() << "For:" << url << "\n " << errbuf << QStacker16Light();
-	}
-
-	if (!curl) { //IF a local instance was used
-		curl_easy_cleanup(useMe);
-	}
-
-	return response;
+	auto res = urlGetContent2(url, quiet, curl);
+	return res.result;
 }
 
 QByteArray urlGetContent(const QString& url, bool quiet, CURL* curl) {
@@ -115,8 +98,8 @@ CURL* CurlKeeper::get() const {
 
 CurlCallResult urlPostContent(const QByteArray& url, const QByteArray post, bool quiet, CURL* curl) {
 	CurlCallResult result;
-	char       errbuf[CURL_ERROR_SIZE] = {0};
-	CURL*      useMe = curl;
+	char           errbuf[CURL_ERROR_SIZE] = {0};
+	CURL*          useMe                   = curl;
 	if (!useMe) {
 		useMe = curl_easy_init();
 		curl_easy_setopt(useMe, CURLOPT_TIMEOUT, 60); //1 minute
@@ -142,4 +125,66 @@ CurlCallResult urlPostContent(const QByteArray& url, const QByteArray post, bool
 	result.ok = true;
 
 	return result;
+}
+
+[[nodiscard]] Header parseHeader(const QStringView headers) {
+	Header header;
+	auto   lines = QStringTokenizer{headers, u"\r\n"};
+	auto   c     = lines.toContainer();
+	qDebug() << c;
+	for (auto& line : lines) {
+		QString c = line.toString();
+		if (line.length() > 0) {
+			auto found = line.indexOf(u":");
+			if (found > 0) {
+				auto value  = line.mid(found + 1);
+				auto key    = line.left(found);
+				auto k      = key.toString();
+				header[key] = value;
+			}
+		}
+	}
+
+	return header;
+}
+
+CurlCallResult urlGetContent2(const QByteArray& url, bool quiet, CURL* curl) {
+	CurlCallResult final;
+	char           errbuf[CURL_ERROR_SIZE] = {0};
+	CURL*          useMe                   = curl;
+	if (!useMe) {
+		useMe = curl_easy_init();
+		curl_easy_setopt(useMe, CURLOPT_TIMEOUT, 60); //1 minute
+		//all those are "needed"
+		curl_easy_setopt(useMe, CURLOPT_SSL_VERIFYPEER, 0);
+	}
+	//Nothing cames to my mind that will ever change those 3
+	curl_easy_setopt(useMe, CURLOPT_URL, url.constData());
+	curl_easy_setopt(useMe, CURLOPT_WRITEDATA, &final.result);
+	curl_easy_setopt(useMe, CURLOPT_ERRORBUFFER, errbuf);
+	curl_easy_setopt(useMe, CURLOPT_WRITEFUNCTION, QBWriter);
+	curl_easy_setopt(useMe, CURLOPT_HEADERFUNCTION, QSWriter);
+	curl_easy_setopt(useMe, CURLOPT_HEADERDATA, &final.headerRaw);
+
+	auto res = curl_easy_perform(useMe);
+	if (res != CURLE_OK && !quiet) {
+		qDebug().noquote() << "For:" << url << "\n " << errbuf << QStacker16Light();
+	}
+	final.header = parseHeader(final.headerRaw);
+
+	if (!curl) { //IF a local instance was used
+		curl_easy_cleanup(useMe);
+	}
+
+	return final;
+}
+
+bool CaseInsensitiveCompare::operator()(QStringView a, QStringView b) const noexcept {
+	//we have to provide the operator<=
+	return  a.compare(b, Qt::CaseInsensitive) < 1;
+}
+
+CurlCallResult::CurlCallResult() {
+	//quite hard to have smaller header nowadays
+	headerRaw.reserve(512);
 }
