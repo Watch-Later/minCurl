@@ -9,3 +9,5 @@ HEADERS += \
     $$PWD/mincurl.h \
     $$PWD/curlpp.h \
     $$PWD/urlgetcontent.h 
+
+LIBS += -lcurl
