@@ -53,6 +53,9 @@ class CurlKeeper {
 	CurlKeeper();
 	~CurlKeeper();
 
+	operator CURL*() const {
+		return curl;
+	}
 	CURL* get() const;
 
       private:
