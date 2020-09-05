@@ -20,7 +20,7 @@ struct CurlPPStruct {
 };
 
 struct upload_status {
-	int bytes_read = 0;
+	int         bytes_read = 0;
 	std::string smtp_payload;
 };
 
@@ -53,7 +53,7 @@ struct upload_status {
  */
 
 class CURLpp {
-	typedef std::vector<std::map<std::string, std::string>> vector_of_errors;
+	using vector_of_errors = std::vector<std::map<std::string, std::string>>;
 
       public:
 	class Builder;
@@ -71,30 +71,31 @@ class CURLpp {
 	std::string getEffectiveUrl() const;
 	std::string getLastParam() const;
 	std::string getLastResponse() const;
-	void setUrl(const std::string& url);
-	void addHeader(const std::string& header);
-	void resetHeader();
-	void setPost(const std::string& post);
+	void        setUrl(const std::string& url);
+	void        addHeader(const std::string& header);
+	void        resetHeader();
+	void        setPost(const std::string& post);
 	CURLpp(const CURLpp::Builder& opt);
 	CURL* getMarx() const;
+
       private:
 	Builder* copia = nullptr; //avoid to go out of scope of certain thing
 
 	template <typename T>
-	void log(const char* name, T value);
+	void          log(const char* name, T value);
 	static size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp);
 
 	static size_t smtp_payload_source(void* ptr, size_t size, size_t nmemb, void* userp);
-	void smtp_prepare_message();
-	bool smtp_send();
+	void          smtp_prepare_message();
+	bool          smtp_send();
 
-	CURL*                           marx;
-	std::string                     lastError    = "noerr";
-	std::string                     lastUrl      = "";
-	std::string                     lastParam    = "";
-	std::string                     lastResponse = "";
-	char*                           effectiveUrl = nullptr;
-	long                            http_code    = 0;
+	CURL*       marx;
+	std::string lastError    = "noerr";
+	std::string lastUrl      = "";
+	std::string lastParam    = "";
+	std::string lastResponse = "";
+	char*       effectiveUrl = nullptr;
+	long        http_code    = 0;
 
 	static std::mutex       error_mutex;
 	static vector_of_errors listOfErrors;
@@ -176,7 +177,6 @@ class CURLpp::Builder {
  * will be shared among all the easy handles that are used within the same multi handle.
  *
  */
-typedef unsigned long long quint64;
 //GG all forward declaration of template, no one can stop us!
 class QByteArray;
 template <typename QByteArray>
