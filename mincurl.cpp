@@ -122,7 +122,10 @@ CurlCallResult urlPostContent(const QByteArray& url, const QByteArray post, bool
 	if (!curl) { //IF a local instance was used
 		curl_easy_cleanup(useMe);
 	}
-	result.ok = true;
+
+	if (res == CURLE_OK) {
+		result.ok = true;
+	}
 
 	return result;
 }
@@ -181,6 +184,10 @@ CurlCallResult urlGetContent2(const QByteArray& url, bool quiet, CURL* curl) {
 
 	if (!curl) { //IF a local instance was used
 		curl_easy_cleanup(useMe);
+	}
+
+	if (res == CURLE_OK) {
+		final.ok = true;
 	}
 
 	return final;
