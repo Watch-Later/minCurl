@@ -71,6 +71,7 @@ using Header = std::map<QStringView, QStringView, CaseInsensitiveCompare>;
 struct CurlCallResult {
 	CurlCallResult();
 	QString  errorMsg;
+	QString  getError() const;
 	CURLcode errorCode;
 	//used to keep alive all the QStringView
 	QString headerRaw;
@@ -93,3 +94,18 @@ QByteArray     urlGetContent(const QString& url, bool quiet = false, CURL* curl 
 CurlCallResult urlGetContent2(const QByteArray& url, bool quiet = false, CURL* curl = nullptr);
 //TODO rifare la funzione e ritornare un oggetto composito per sapere se è andato a buon fine
 CurlCallResult urlPostContent(const QByteArray& url, const QByteArray post, bool quiet = false, CURL* curl = nullptr);
+
+enum Severity {
+	none,
+	_qDebug,
+	_qInfo,
+	_qWarning,
+	_qCritical
+};
+
+//TODO cablare dentro il warn, di modo che non serve mettere quiet true e gestire fuori errori di basso livello, ma hai già dentro tutto nel 98% dei casi
+//Buttaci in mezzo tempi risposta e altre cosine carine
+class urlGetContentV3 {
+	static CurlCallResult get(const QByteArray& url, bool quiet = false, CURL* curl = nullptr);
+	Severity              severity = Severity::none;
+};

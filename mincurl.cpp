@@ -212,3 +212,7 @@ CurlCallResult::CurlCallResult() {
 	//quite hard to have smaller header nowadays
 	headerRaw.reserve(512);
 }
+
+QString CurlCallResult::getError() const {
+	return curl_easy_strerror(errorCode);
+}
