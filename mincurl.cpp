@@ -193,7 +193,7 @@ CurlCallResult urlGetContent2(const QByteArray& url, bool quiet, CURL* curl) {
 		result.ok     = true;
 		result.header = parseHeader(result.headerRaw);
 	} else if (!quiet) {
-		qCritical().noquote() << "For:" << url << "\n " << errbuf;
+		qCritical().noquote() << "For:" << url << "\n " << errbuf << QStacker16Light();
 	}
 
 	if (!curl) { //IF a local instance was used
