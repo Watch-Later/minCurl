@@ -1,5 +1,6 @@
 #pragma once
 
+#include "curl/curl.h"
 #include <QByteArray>
 #include <QString>
 #include <map>
@@ -69,8 +70,8 @@ struct CaseInsensitiveCompare {
 using Header = std::map<QStringView, QStringView, CaseInsensitiveCompare>;
 struct CurlCallResult {
 	CurlCallResult();
-	QStringView status_line;
-	QStringView reason;
+	QString  errorMsg;
+	CURLcode errorCode;
 	//used to keep alive all the QStringView
 	QString headerRaw;
 	Header  header;
