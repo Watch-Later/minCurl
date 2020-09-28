@@ -89,13 +89,13 @@ class CURLpp {
 	void          smtp_prepare_message();
 	bool          smtp_send();
 
-	CURL*       marx;
-	std::string lastError    = "noerr";
-	std::string lastUrl      = "";
-	std::string lastParam    = "";
-	std::string lastResponse = "";
+	CURL*       marx      = nullptr;
+	std::string lastError = "noerr";
+	std::string lastUrl;
+	std::string lastParam;
+	std::string lastResponse;
 	char*       effectiveUrl = nullptr;
-	long        http_code    = 0;
+	long        http_code = 0;
 
 	static std::mutex       error_mutex;
 	static vector_of_errors listOfErrors;

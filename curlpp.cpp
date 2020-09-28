@@ -35,7 +35,7 @@ std::string CURLpp::perform() {
 	if (res == CURLE_OK) {
 		curl_easy_getinfo(marx, CURLINFO_RESPONSE_CODE, &http_code);
 		curl_easy_getinfo(marx, CURLINFO_EFFECTIVE_URL, &effectiveUrl);
-		if (http_code == 200) {
+		if (http_code == 200 || http_code == 250) { //250 is ok for mail
 			if (chunk.size > 0) {
 				response.append(chunk.memory, chunk.size);
 				log("response", chunk.memory);
@@ -47,13 +47,13 @@ std::string CURLpp::perform() {
 				log("response", chunk.memory);
 				lastError = "error: http code: " + std::to_string(http_code) + ", " + response + ", url:" + copia->url;
 			} else {
-				lastError = "error: http code: " + std::to_string(http_code) + ", no payload, url:" + copia->url;
+				lastError = "error: http code: " + std::to_string(http_code) + " error message: " + curl_easy_strerror(res) + ", no response payload, url:" + copia->url;
 			}
 		}
 	} else {
 		log("curl errorcode", res);
 		log("curl error", curl_easy_strerror(res));
-		lastError = "error: curl error: " + std::string(curl_easy_strerror(res)) + ", url:" + copia->url + ", timeout:" + std::to_string(copia->timeout);
+		lastError = "error: curl error: "s + curl_easy_strerror(res) + ", url:" + copia->url + ", timeout:" + std::to_string(copia->timeout);
 	}
 #endif
 
