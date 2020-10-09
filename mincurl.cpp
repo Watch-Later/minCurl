@@ -63,7 +63,7 @@ QByteArray urlGetContent(const QString& url, bool quiet, CURL* curl) {
 }
 
 CurlHeader::~CurlHeader() {
-	curl_slist_free_all(chunk);
+	clear();
 }
 
 void CurlHeader::add(QString header) {
@@ -78,8 +78,19 @@ void CurlHeader::add(const char* header) {
 	chunk = curl_slist_append(chunk, header);
 }
 
-curl_slist* CurlHeader::getChunk() const {
+void CurlHeader::clear() {
+	if (chunk) {
+		curl_slist_free_all(chunk);
+		chunk = nullptr;
+	}
+}
+
+const curl_slist* CurlHeader::getChunk() const {
 	return chunk;
+}
+
+const curl_slist* CurlHeader::get() const {
+	return getChunk();
 }
 
 CurlKeeper::CurlKeeper() {
