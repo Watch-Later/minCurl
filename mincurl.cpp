@@ -39,12 +39,21 @@ CURLTiming curlTimer(CURLTiming& timing, CURL* curl) {
 	curl_easy_getinfo(curl, CURLINFO_APPCONNECT_TIME, &timing.appConnect);
 	curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &timing.preTransfer);
 	curl_easy_getinfo(curl, CURLINFO_STARTTRANSFER_TIME, &timing.startTtransfer);
+	curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &timing.trxByte);
 	return timing;
 }
 
 QString CURLTiming::print() const {
 	auto line = QStringLiteral("total: %1 \t, sslReady: %2").arg(totalTime).arg(preTransfer);
 	return line;
+}
+
+CURLTiming::CURLTiming(CURL* curl) {
+	curlTimer(*this, curl);
+}
+
+void CURLTiming::read(CURL* curl) {
+	curlTimer(*this, curl);
 }
 
 CURLTiming curlTimer(CURL* curl) {

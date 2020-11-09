@@ -14,6 +14,7 @@ struct curlCall {
 	QByteArray post;
 	char       errbuf[CURL_ERROR_SIZE] = {0};
 	int        category                = 0;
+	CURLTiming timing;
 };
 
 class ErrorLog {

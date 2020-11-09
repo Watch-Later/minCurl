@@ -17,8 +17,15 @@ struct CURLTiming {
 	double  preTransfer    = 0;
 	double  startTtransfer = 0;
 	double  speed          = 0;
+	double  trxByte        = 0;
 	QString print() const;
+	CURLTiming() = default;
+	CURLTiming(CURL* curl);
+	void read(CURL* curl);
+	void printTime(QString& response) const;
 };
+CURLTiming curlTimer(CURLTiming& timing, CURL* curl);
+
 //In theory CURL will write to STDOUT if nothing defined
 size_t FakeCurlWriter(void* contents, size_t size, size_t nmemb, void* userp);
 
@@ -30,20 +37,17 @@ size_t FakeCurlWriter(void* contents, size_t size, size_t nmemb, void* userp);
  */
 size_t QBWriter(void* contents, size_t size, size_t nmemb, QByteArray* userp);
 //same but with std::string
-size_t     STDWriter(void* contents, size_t size, size_t nmemb, std::string* userp);
-CURLTiming curlTimer(CURLTiming& timing, CURL* curl);
-CURLTiming curlTimer(CURL* curl);
-void       printTime(const CURLTiming& timing, QString& response);
+size_t STDWriter(void* contents, size_t size, size_t nmemb, std::string* userp);
 
 //cry
 struct curl_slist;
 class CurlHeader {
       public:
 	~CurlHeader();
-	void        add(QString header);
-	void        add(QByteArray header);
-	void        add(const char* header);
-	void        clear();
+	void              add(QString header);
+	void              add(QByteArray header);
+	void              add(const char* header);
+	void              clear();
 	const curl_slist* getChunk() const;
 	const curl_slist* get() const;
 
