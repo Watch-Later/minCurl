@@ -67,8 +67,6 @@ std::string CURLpp::perform() {
 		error_counter                 = error_counter % NUM_OF_CURL_ERR;
 	}
 
-	// free results
-	free(chunk.memory);
 	lastResponse = response;
 
 	return response;
@@ -467,4 +465,12 @@ bool CurlHandlerWrapper::sendNotification(const QByteArray& UrlList) {
 	result &= ok; // mark if error but keep on going
 
 	return result;
+}
+
+CurlPPStruct::~CurlPPStruct() {
+	size = 0;
+	if (memory) {
+		free(memory);
+		memory = nullptr;
+	}
 }

@@ -17,6 +17,7 @@
 struct CurlPPStruct {
 	char*  memory = nullptr;
 	size_t size   = 0;
+	~CurlPPStruct();
 };
 
 struct upload_status {
