@@ -99,7 +99,7 @@ const curl_slist* CurlHeader::getChunk() const {
 }
 
 const curl_slist* CurlHeader::get() const {
-	return getChunk();
+	return chunk;
 }
 
 CurlKeeper::CurlKeeper() {

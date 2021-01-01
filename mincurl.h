@@ -48,8 +48,9 @@ class CurlHeader {
 	void              add(QByteArray header);
 	void              add(const char* header);
 	void              clear();
-	const curl_slist* getChunk() const;
 	const curl_slist* get() const;
+
+	[[deprecated("use get")]] const curl_slist* getChunk() const;
 
       private:
 	struct curl_slist* chunk = nullptr;
