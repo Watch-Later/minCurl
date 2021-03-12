@@ -12,6 +12,10 @@ UrlGetContent::UrlGetContent(const QByteArray& url, bool quiet, int category, in
 	this->timeOut  = timeOut;
 }
 
+long UrlGetContent::getHttpCode() const {
+	return httpCode;
+}
+
 QByteArray UrlGetContent::execute(ErrorLog* eLog) {
 	QByteArray response;
 	CURL*      useMe = curl;
@@ -22,7 +26,7 @@ QByteArray UrlGetContent::execute(ErrorLog* eLog) {
 		curl_easy_setopt(useMe, CURLOPT_SSL_VERIFYPEER, 0);
 	}
 	char errbuf[CURL_ERROR_SIZE] = {0};
-	
+
 	//Nothing cames to my mind that will ever change those 3
 	curl_easy_setopt(useMe, CURLOPT_URL, url.constData());
 	curl_easy_setopt(useMe, CURLOPT_WRITEFUNCTION, QBWriter);
@@ -30,12 +34,14 @@ QByteArray UrlGetContent::execute(ErrorLog* eLog) {
 	curl_easy_setopt(useMe, CURLOPT_ERRORBUFFER, errbuf);
 
 	for (uint i = 0; i < retryNum; ++i) {
-		curlCode = curl_easy_perform(useMe);
+		curlCode      = curl_easy_perform(useMe);
 		callPerformed = true;
 
 		if (curlCode != CURLE_OK && !quiet) {
 			qDebug().noquote() << "For:" << url << "\n " << errbuf;
 		}
+
+		httpCode = getHttpCodeFromCurl(useMe);
 
 		if (eLog) {
 			curlCall call;
@@ -71,7 +77,6 @@ bool UrlGetContent::curlOk() const {
 	return false;
 }
 
-CURLcode UrlGetContent::getCurlCode() const
-{
+CURLcode UrlGetContent::getCurlCode() const {
 	return curlCode;
 }

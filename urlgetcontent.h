@@ -16,13 +16,15 @@ class UrlGetContent {
 	bool curlOk() const;
 
 	CURLcode getCurlCode() const;
-	
-private:
+	long     getHttpCode() const;
+
+	  private:
 	QByteArray url;
 	bool       quiet    = false;
 	int        category = 0;
 	int        timeOut  = 0;
 	CURLcode   curlCode;
+	long       httpCode      = 0;
 	bool       callPerformed = false;
 	CURL*      curl          = nullptr;
 };

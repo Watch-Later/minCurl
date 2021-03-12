@@ -19,17 +19,13 @@ QString ErrorLog::logQuery(const curlCall* call) {
 	}
 
 	// milliseconds
-	double     now    = QDateTime::currentMSecsSinceEpoch() / 1000.0;
+	double     now = QDateTime::currentMSecsSinceEpoch() / 1000.0;
 	CURLTiming timing(curl);
 	// seconds
 	double totalTime   = timing.totalTime;
 	double preTransfer = timing.preTransfer;
 
-	long httpCode;
-	auto res = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
-	if (res != CURLE_OK) {
-		qWarning().noquote() << "curl_easy_getinfo() didn't return the curl code.\n";
-	}
+	auto httpCode = getHttpCodeFromCurl(curl);
 
 	QByteArray truncatedResp;
 	if (truncatedResponseLength > 0) {
