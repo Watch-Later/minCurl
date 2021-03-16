@@ -19,7 +19,7 @@ long UrlGetContent::getHttpCode() const {
 QByteArray UrlGetContent::execute(ErrorLog* eLog) {
 	QByteArray response;
 	CURL*      useMe = curl;
-	if (!useMe) {
+	if (useMe) {
 		useMe = curl_easy_init();
 		curl_easy_setopt(useMe, CURLOPT_TIMEOUT, timeOut);
 		//99.9% of the time is what we want
