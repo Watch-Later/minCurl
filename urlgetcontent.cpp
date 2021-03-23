@@ -12,10 +12,6 @@ UrlGetContent::UrlGetContent(const QByteArray& url, bool quiet, int category, in
 	this->timeOut  = timeOut;
 }
 
-long UrlGetContent::getHttpCode() const {
-	return httpCode;
-}
-
 QByteArray UrlGetContent::execute(ErrorLog* eLog) {
 	QByteArray response;
 	CURL*      useMe = curl;
