@@ -25,7 +25,8 @@ QString ErrorLog::logQuery(const curlCall* call) {
 	double totalTime   = timing.totalTime;
 	double preTransfer = timing.preTransfer;
 
-	auto httpCode = getHttpCodeFromCurl(curl);
+	long httpCode;
+	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 
 	QByteArray truncatedResp;
 	if (truncatedResponseLength > 0) {

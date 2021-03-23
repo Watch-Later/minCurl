@@ -41,8 +41,6 @@ QByteArray UrlGetContent::execute(ErrorLog* eLog) {
 			qDebug().noquote() << "For:" << url << "\n " << errbuf;
 		}
 
-		httpCode = getHttpCodeFromCurl(useMe);
-
 		if (eLog) {
 			curlCall call;
 			call.response = response;
@@ -50,7 +48,7 @@ QByteArray UrlGetContent::execute(ErrorLog* eLog) {
 			call.get      = url;
 			call.category = category;
 			call.curlCode = curlCode;
-			strcpy(call.errbuf, errbuf);
+			memccpy(call.errbuf, errbuf, CURL_ERROR_SIZE, 1);
 
 			sql = eLog->logQuery(&call);
 		}
@@ -63,6 +61,7 @@ QByteArray UrlGetContent::execute(ErrorLog* eLog) {
 		qWarning() << "max number (" << retryNum << ") of curl calls failed for " << url;
 	}
 
+	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 	if (!curl) { //IF a local instance was used
 		curl_easy_cleanup(useMe);
 	}

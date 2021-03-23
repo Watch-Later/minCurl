@@ -118,5 +118,3 @@ class urlGetContentV3 {
 	static CurlCallResult get(const QByteArray& url, bool quiet = false, CURL* curl = nullptr);
 	Severity              severity = Severity::none;
 };
-
-long getHttpCodeFromCurl(CURL* curl);

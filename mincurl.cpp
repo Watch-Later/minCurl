@@ -236,13 +236,3 @@ CurlCallResult::CurlCallResult() {
 QString CurlCallResult::getError() const {
 	return curl_easy_strerror(errorCode);
 }
-
-long getHttpCodeFromCurl(CURL* curl) {
-	long httpCode = 0;
-	auto res      = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
-	if (res != CURLE_OK) {
-		qWarning().noquote() << QSL("error in getting http code with curl_easy_getinfo().\ncurl error = %1").arg(res) << QStacker16Light();
-		return 0;
-	}
-	return httpCode;
-}

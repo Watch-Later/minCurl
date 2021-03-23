@@ -16,7 +16,6 @@ class UrlGetContent {
 	bool curlOk() const;
 
 	CURLcode getCurlCode() const;
-	long     getHttpCode() const;
 
 	  private:
 	QByteArray url;
