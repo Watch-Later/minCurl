@@ -57,7 +57,8 @@ QByteArray UrlGetContent::execute(ErrorLog* eLog) {
 		qWarning() << "max number (" << retryNum << ") of curl calls failed for " << url;
 	}
 
-	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+	// "ok" is for testing
+	[[maybe_unused]] auto ok = curl_easy_getinfo(useMe, CURLINFO_RESPONSE_CODE, &httpCode);
 	if (!curl) { //IF a local instance was used
 		curl_easy_cleanup(useMe);
 	}
