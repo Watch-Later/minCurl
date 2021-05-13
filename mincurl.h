@@ -41,9 +41,18 @@ size_t QBWriter(void* contents, size_t size, size_t nmemb, QByteArray* userp);
 //same but with std::string
 size_t STDWriter(void* contents, size_t size, size_t nmemb, std::string* userp);
 
+class NonCopyable {
+      protected:
+	NonCopyable()  = default;
+	~NonCopyable() = default;
+
+	NonCopyable(const NonCopyable&) = delete;
+	NonCopyable& operator=(const NonCopyable&) = delete;
+};
+
 //cry
 struct curl_slist;
-class CurlHeader {
+class CurlHeader : private NonCopyable {
       public:
 	~CurlHeader();
 	void              add(QString header);
@@ -58,14 +67,32 @@ class CurlHeader {
 	struct curl_slist* chunk = nullptr;
 };
 
-class CurlKeeper {
+class CurlForm : private NonCopyable {
+      public:
+	CurlForm(CURL* curl);
+	;
+
+	operator curl_mime*() const;
+	curl_mime* get() const;
+
+	void add(const QString& name, const QString& value);
+
+	void add(const QByteArray& name, const QByteArray& value);
+	void connect();
+	~CurlForm();
+
+      private:
+	//the curl_mimepart do not to be freed as long as they are used
+	curl_mime* form = nullptr;
+	CURL*      curl = nullptr;
+};
+
+class CurlKeeper : private NonCopyable {
       public:
 	CurlKeeper();
 	~CurlKeeper();
 
-	operator CURL*() const {
-		return curl;
-	}
+	operator CURL*() const;
 	CURL* get() const;
 
       private:
