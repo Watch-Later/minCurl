@@ -10,7 +10,7 @@ class UrlGetContent {
 	  public:
 	long httpCode = 0;
 
-	UrlGetContent(const QByteArray& _url, bool _quiet, int category, int timeOut = 60, CURL* curl = nullptr);
+	UrlGetContent(const QByteArray& _url, bool _quiet, int _category, int timeOut = 60, CURL* curl = nullptr);
 	QByteArray execute(ErrorLog* eLog = nullptr);
 	QString    sql;
 
