@@ -112,7 +112,7 @@ CurlKeeper::~CurlKeeper() {
 	curl_easy_cleanup(curl);
 }
 
-CurlKeeper::operator CURL *() const {
+CurlKeeper::operator CURL*() const {
 	return curl;
 }
 
@@ -241,21 +241,21 @@ QString CurlCallResult::getError() const {
 	return curl_easy_strerror(errorCode);
 }
 
-CurlForm::CurlForm(CURL *curl) {
-	this->curl = curl;
+CurlForm::CurlForm(CURL* _curl) {
+	this->curl = _curl;
 	/* Create the form */
 	form = curl_mime_init(curl);
 }
 
-curl_mime *CurlForm::get() const {
+curl_mime* CurlForm::get() const {
 	return form;
 }
 
-void CurlForm::add(const QString &name, const QString &value) {
+void CurlForm::add(const QString& name, const QString& value) {
 	add(name.toUtf8(), value.toUtf8());
 }
 
-void CurlForm::add(const QByteArray &name, const QByteArray &value) {
+void CurlForm::add(const QByteArray& name, const QByteArray& value) {
 	// form 1
 	curl_mimepart* field = nullptr;
 	field                = curl_mime_addpart(form);
@@ -271,6 +271,6 @@ CurlForm::~CurlForm() {
 	curl_mime_free(form);
 }
 
-CurlForm::operator curl_mime *() const {
+CurlForm::operator curl_mime*() const {
 	return form;
 }

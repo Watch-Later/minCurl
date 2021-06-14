@@ -69,7 +69,7 @@ class CurlHeader : private NonCopyable {
 
 class CurlForm : private NonCopyable {
       public:
-	CurlForm(CURL* curl);
+	CurlForm(CURL* _curl);
 	;
 
 	operator curl_mime*() const;
