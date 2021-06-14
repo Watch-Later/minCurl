@@ -4,12 +4,12 @@
 #include <QDebug>
 
 // timeOut in seconds
-UrlGetContent::UrlGetContent(const QByteArray& _url, bool _quiet, int _category, int timeOut, CURL* curl) {
+UrlGetContent::UrlGetContent(const QByteArray& _url, bool _quiet, int _category, int _timeOut, CURL* curl) {
 	this->url      = _url;
 	this->quiet    = _quiet;
 	this->category = _category;
 	this->curl     = curl;
-	this->timeOut  = timeOut;
+	this->timeOut  = _timeOut;
 }
 
 QByteArray UrlGetContent::execute(ErrorLog* eLog) {
