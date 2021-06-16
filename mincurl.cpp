@@ -189,6 +189,14 @@ CurlCallResult urlPostContent(const QByteArray& url, const QByteArray post, bool
 	return result;
 }
 
+CurlCallResult urlGetContent2(const QString& url, bool quiet, CURL* curl) {
+	return urlGetContent2(url.toUtf8(), quiet, curl);
+}
+
+CurlCallResult urlGetContent2(const char* url, bool quiet, CURL* curl) {
+	return urlGetContent2(QByteArray(url), quiet, curl);
+}
+
 CurlCallResult urlGetContent2(const QByteArray& url, bool quiet, CURL* curl) {
 	CurlCallResult result;
 	char           errbuf[CURL_ERROR_SIZE] = {0};
