@@ -132,13 +132,13 @@ CURL* CurlKeeper::get() const {
 	auto   c     = lines.toContainer();
 	//qDebug() << c;
 	for (auto& line : lines) {
-		QString c = line.toString();
+		//QString c = line.toString(); //debug symbol are broken for stringview -.-
 		if (line.length() > 0) {
 			auto found = line.indexOf(u":");
 			if (found > 0) {
-				auto value  = line.mid(found + 1);
-				auto key    = line.left(found);
-				auto k      = key.toString();
+				auto value = line.mid(found + 1);
+				auto key   = line.left(found);
+				//auto k      = key.toString();
 				header[key] = value;
 			}
 		}
