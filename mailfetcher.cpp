@@ -21,6 +21,9 @@ Mail MailFetcher::fetch(bool verbose, bool printError) {
 		// check curl result
 		if (res != CURLE_OK) {
 			if (printError) {
+				//TODO
+				// se curl danno errori
+				// mettere loop con N tentativi
 				qWarning().noquote() << QSL("curl_easy_perform() failed: %1").arg(curl_easy_strerror(res)) << QStacker16Light();
 			}
 			return emptyMail;
