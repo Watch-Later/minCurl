@@ -108,8 +108,15 @@ Mail MailFetcher::fetch(bool verbose, bool printError) {
 		}
 
 		r.replace("* SEARCH", "");
-		r         = r.trimmed();
-		auto list = r.split(' ');
+		r = r.trimmed();
+
+		QList<QByteArray> list;
+		if (!r.isEmpty()) {
+			// we must do this because "split" when "r" is empty returns {" "}
+			// (the list containing the string "<separator>")
+			list = r.split(' ');
+		}
+
 		// we expect to get 1 mail
 		switch (list.size()) {
 		case 0:
@@ -121,7 +128,13 @@ Mail MailFetcher::fetch(bool verbose, bool printError) {
 			/*
 			 * mail query
 			 */
-			auto mailId  = list[0].toInt();
+			auto sMailId = list[0];
+			bool ok = false;
+			auto mailId  = sMailId.toInt(&ok);
+			if(!ok){
+				qWarning().noquote() << "mail id =" << sMailId << "is not a number" << QStacker16Light();
+			}
+
 			auto mailUrl = QSL("%1;UID=%2")
 							   .arg(folderUrl)
 							   .arg(mailId);
