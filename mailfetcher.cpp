@@ -11,9 +11,11 @@ void MailFetcher::logSearchQuery(QString username, QString password, QString fol
 		return;
 	}
 
-	QString skel = R"(
-- request -
-username = %1 password = %2 folderUrl = %3 searchQuery = %4
+	QString skel = R"(- request -
+username = %1
+password = %2
+folderUrl = %3
+searchQuery = %4
 )";
 	auto    msg  = skel
 				   .arg(username)
@@ -28,9 +30,10 @@ void MailFetcher::logSearchResponse(QString curlCode, QString curlError, QString
 		return;
 	}
 
-	QString skel = R"(
-- response -
-curlCode = %1 curlError = %2 result = %3
+	QString skel = R"(- response -
+curlCode = %1
+curlError = %2
+result = %3
 )";
 	auto    msg  = skel
 				   .arg(curlCode)
@@ -44,8 +47,7 @@ void MailFetcher::logMailQuery(QString mailUrl) {
 		return;
 	}
 
-	QString skel = R"(
-- request -
+	QString skel = R"(- request -
 mailUrl = %1
 )";
 	auto    msg  = skel
@@ -58,14 +60,15 @@ void MailFetcher::logMailResponse(QString curlCode, QString curlError, QString m
 		return;
 	}
 
-	QString skel = R"(
-- response -
-curlCode = %1 curlError = %2 mail (truncated) = %3
+	QString skel = R"(- response -
+curlCode = %1
+curlError = %2
+mail (truncated) = %3
 )";
 	auto    msg  = skel
 				   .arg(curlCode)
 				   .arg(curlError)
-				   .arg(mail.left(50));
+				   .arg(mail.left(500));
 	logWithTime(logFile, msg);
 }
 
