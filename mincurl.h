@@ -28,7 +28,7 @@ struct CURLTiming {
 };
 CURLTiming curlTimer(CURLTiming& timing, CURL* curl);
 
-//In theory CURL will write to STDOUT if nothing defined
+// In theory CURL will write to STDOUT if nothing defined
 size_t FakeCurlWriter(void* contents, size_t size, size_t nmemb, void* userp);
 
 /* Use like this:
@@ -38,7 +38,7 @@ size_t FakeCurlWriter(void* contents, size_t size, size_t nmemb, void* userp);
  * finish!
  */
 size_t QBWriter(void* contents, size_t size, size_t nmemb, QByteArray* userp);
-//same but with std::string
+// same but with std::string
 size_t STDWriter(void* contents, size_t size, size_t nmemb, std::string* userp);
 
 class NonCopyable {
@@ -50,7 +50,7 @@ class NonCopyable {
 	NonCopyable& operator=(const NonCopyable&) = delete;
 };
 
-//cry
+// cry
 struct curl_slist;
 class CurlHeader : private NonCopyable {
       public:
@@ -72,7 +72,7 @@ class CurlForm : private NonCopyable {
 	CurlForm(CURL* _curl);
 	;
 
-	operator curl_mime*() const;
+	           operator curl_mime*() const;
 	curl_mime* get() const;
 
 	void add(const QString& name, const QString& value);
@@ -82,7 +82,7 @@ class CurlForm : private NonCopyable {
 	~CurlForm();
 
       private:
-	//the curl_mimepart do not to be freed as long as they are used
+	// the curl_mimepart do not to be freed as long as they are used
 	curl_mime* form = nullptr;
 	CURL*      curl = nullptr;
 };
@@ -92,14 +92,14 @@ class CurlKeeper : private NonCopyable {
 	CurlKeeper();
 	~CurlKeeper();
 
-	operator CURL*() const;
+	      operator CURL*() const;
 	CURL* get() const;
 
       private:
 	CURL* curl = nullptr;
 };
 
-//inspired from https://github.com/whoshuu/cpr/blob/master/include/cpr/cprtypes.h
+// inspired from https://github.com/whoshuu/cpr/blob/master/include/cpr/cprtypes.h
 struct CaseInsensitiveCompare {
 	bool operator()(QStringView a, QStringView b) const noexcept;
 };
@@ -109,10 +109,10 @@ struct CurlCallResult {
 	QString  errorMsg;
 	QString  getError() const;
 	CURLcode errorCode;
-	//used to keep alive all the QStringView
+	// used to keep alive all the QStringView
 	QString headerRaw;
 	Header  header;
-	//Keep raw as can be binary stuff
+	// Keep raw as can be binary stuff
 	QByteArray result;
 	CURLTiming timing;
 	bool       ok = false;
@@ -130,7 +130,7 @@ QByteArray     urlGetContent(const QString& url, bool quiet = false, CURL* curl 
 CurlCallResult urlGetContent2(const QByteArray& url, bool quiet = false, CURL* curl = nullptr);
 CurlCallResult urlGetContent2(const QString& url, bool quiet = false, CURL* curl = nullptr);
 CurlCallResult urlGetContent2(const char* url, bool quiet = false, CURL* curl = nullptr);
-//TODO rifare la funzione e ritornare un oggetto composito per sapere se è andato a buon fine
+// TODO rifare la funzione e ritornare un oggetto composito per sapere se è andato a buon fine
 CurlCallResult urlPostContent(const QByteArray& url, const QByteArray post, bool quiet = false, CURL* curl = nullptr);
 
 enum Severity {
@@ -141,8 +141,8 @@ enum Severity {
 	_qCritical
 };
 
-//TODO cablare dentro il warn, di modo che non serve mettere quiet true e gestire fuori errori di basso livello, ma hai già dentro tutto nel 98% dei casi
-//Buttaci in mezzo tempi risposta e altre cosine carine
+// TODO cablare dentro il warn, di modo che non serve mettere quiet true e gestire fuori errori di basso livello, ma hai già dentro tutto nel 98% dei casi
+// Buttaci in mezzo tempi risposta e altre cosine carine
 class urlGetContentV3 {
 	static CurlCallResult get(const QByteArray& url, bool quiet = false, CURL* curl = nullptr);
 	Severity              severity = Severity::none;
