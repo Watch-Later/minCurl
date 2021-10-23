@@ -147,3 +147,9 @@ class urlGetContentV3 {
 	static CurlCallResult get(const QByteArray& url, bool quiet = false, CURL* curl = nullptr);
 	Severity              severity = Severity::none;
 };
+
+struct QBReaderSt {
+	size_t     pos = 0;
+	QByteArray data;
+};
+size_t QBReader(char* ptr, size_t size, size_t nmemb, void* userdata);

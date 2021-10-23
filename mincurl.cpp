@@ -5,6 +5,31 @@
 #include <QDebug>
 #include <QString>
 #include <curl/curl.h>
+/**
+ * @brief QBReader
+ * Used to debug sent data in HTTPS only site
+ * 
+ * 
+	curl_easy_setopt(curl, CURLOPT_POST, true);
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, s1.data.size());
+	curl_easy_setopt(curl, CURLOPT_READFUNCTION, QBReader);
+	curl_easy_setopt(curl, CURLOPT_READDATA, &s1);
+ * 
+ * @return 
+ */
+size_t QBReader(char* ptr, size_t size, size_t nmemb, void* userdata) {
+	auto readMe = (QBReaderSt*)userdata;
+	auto cur    = readMe->pos;
+	readMe->pos = size * nmemb;
+
+	auto remnant = readMe->data.size() - cur;
+
+	auto sent = std::min(remnant, size * nmemb);
+
+	ptr = readMe->data.data() + cur;
+
+	return sent;
+}
 
 size_t QBWriter(void* contents, size_t size, size_t nmemb, QByteArray* userp) {
 	size_t realsize = size * nmemb;
@@ -107,8 +132,8 @@ CurlKeeper::CurlKeeper() {
 }
 
 CurlKeeper::~CurlKeeper() {
-	//todo check usage of header or other stuff ?
-	//in theory you should use CurlHeader
+	// todo check usage of header or other stuff ?
+	// in theory you should use CurlHeader
 	curl_easy_cleanup(curl);
 }
 
@@ -124,21 +149,21 @@ CURL* CurlKeeper::get() const {
   why this stuff is not built in inside curl is a mistery...
  * @brief parseHeader
  * @param headers
- * @return 
+ * @return
  */
 [[nodiscard]] Header parseHeader(const QStringView headers) {
 	Header header;
 	auto   lines = QStringTokenizer{headers, u"\r\n"};
 	auto   c     = lines.toContainer();
-	//qDebug() << c;
+	// qDebug() << c;
 	for (auto& line : lines) {
-		//QString c = line.toString(); //debug symbol are broken for stringview -.-
+		// QString c = line.toString(); //debug symbol are broken for stringview -.-
 		if (line.length() > 0) {
 			auto found = line.indexOf(u":");
 			if (found > 0) {
 				auto value = line.mid(found + 1);
 				auto key   = line.left(found);
-				//auto k      = key.toString();
+				// auto k      = key.toString();
 				header[key] = value;
 			}
 		}
@@ -153,10 +178,10 @@ CurlCallResult urlPostContent(const QByteArray& url, const QByteArray post, bool
 	CURL*          useMe                   = curl;
 	if (!useMe) {
 		useMe = curl_easy_init();
-		curl_easy_setopt(useMe, CURLOPT_TIMEOUT, 60); //1 minute, if you do not like use you own curl
+		curl_easy_setopt(useMe, CURLOPT_TIMEOUT, 60); // 1 minute, if you do not like use you own curl
 	}
 
-	//all those are needed
+	// all those are needed
 	curl_easy_setopt(useMe, CURLOPT_URL, url.constData());
 
 	curl_easy_setopt(useMe, CURLOPT_WRITEDATA, &result.result);
@@ -182,7 +207,7 @@ CurlCallResult urlPostContent(const QByteArray& url, const QByteArray post, bool
 		qCritical().noquote() << "For:" << url << "\n " << errbuf;
 	}
 
-	if (!curl) { //IF a local instance was used
+	if (!curl) { // IF a local instance was used
 		curl_easy_cleanup(useMe);
 	}
 
@@ -203,7 +228,7 @@ CurlCallResult urlGetContent2(const QByteArray& url, bool quiet, CURL* curl) {
 	CURL*          useMe                   = curl;
 	if (!useMe) {
 		useMe = curl_easy_init();
-		curl_easy_setopt(useMe, CURLOPT_TIMEOUT, 60); //1 minute, if you do not like use you own curl
+		curl_easy_setopt(useMe, CURLOPT_TIMEOUT, 60); // 1 minute, if you do not like use you own curl
 	}
 	curl_easy_setopt(useMe, CURLOPT_URL, url.constData());
 
@@ -228,7 +253,7 @@ CurlCallResult urlGetContent2(const QByteArray& url, bool quiet, CURL* curl) {
 		qDebug().noquote() << "For:" << url << "\n " << errbuf << QStacker16Light();
 	}
 
-	if (!curl) { //IF a local instance was used
+	if (!curl) { // IF a local instance was used
 		curl_easy_cleanup(useMe);
 	}
 
@@ -236,12 +261,12 @@ CurlCallResult urlGetContent2(const QByteArray& url, bool quiet, CURL* curl) {
 }
 
 bool CaseInsensitiveCompare::operator()(QStringView a, QStringView b) const noexcept {
-	//we have to provide the operator<=
+	// we have to provide the operator<=
 	return a.compare(b, Qt::CaseInsensitive) < 1;
 }
 
 CurlCallResult::CurlCallResult() {
-	//quite hard to have smaller header nowadays
+	// quite hard to have smaller header nowadays
 	headerRaw.reserve(512);
 }
 
