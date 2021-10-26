@@ -102,7 +102,24 @@ Mail MailFetcher::fetch(bool verbose, bool printError) {
 				//TODO
 				// se curl danno errori
 				// mettere loop con N tentativi
-				qWarning().noquote() << QSL("curl_easy_perform() failed: %1").arg(curl_easy_strerror(res)) << QStacker16Light();
+
+				QString errSkel = R"(
+curl_easy_perform() failed!
+res = %1
+curl string error = %2
+username = %3
+password = %4
+folderUrl = %5
+searchQuery = %6
+)";
+				auto    err     = errSkel
+							   .arg(res)
+							   .arg(curl_easy_strerror(res))
+							   .arg(username)
+							   .arg(password)
+							   .arg(folderUrl)
+							   .arg(searchQuery);
+				qWarning().noquote() << err << QStacker16Light();
 			}
 			return emptyMail;
 		}
@@ -129,9 +146,9 @@ Mail MailFetcher::fetch(bool verbose, bool printError) {
 			 * mail query
 			 */
 			auto sMailId = list[0];
-			bool ok = false;
+			bool ok      = false;
 			auto mailId  = sMailId.toInt(&ok);
-			if(!ok){
+			if (!ok) {
 				qWarning().noquote() << "mail id =" << sMailId << "is not a number" << QStacker16Light();
 			}
 
