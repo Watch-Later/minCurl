@@ -41,6 +41,9 @@ size_t QBWriter(void* contents, size_t size, size_t nmemb, QByteArray* userp);
 // same but with std::string
 size_t STDWriter(void* contents, size_t size, size_t nmemb, std::string* userp);
 
+#ifndef NonCopyable_H
+#define NonCopyable_H
+
 class NonCopyable {
       protected:
 	NonCopyable()  = default;
@@ -49,6 +52,7 @@ class NonCopyable {
 	NonCopyable(const NonCopyable&) = delete;
 	NonCopyable& operator=(const NonCopyable&) = delete;
 };
+#endif //NonCopyable_H
 
 // cry
 struct curl_slist;
