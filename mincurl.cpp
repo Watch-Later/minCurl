@@ -8,14 +8,14 @@
 /**
  * @brief QBReader
  * Used to debug sent data in HTTPS only site
- * 
- * 
-	curl_easy_setopt(curl, CURLOPT_POST, true);
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, s1.data.size());
-	curl_easy_setopt(curl, CURLOPT_READFUNCTION, QBReader);
-	curl_easy_setopt(curl, CURLOPT_READDATA, &s1);
- * 
- * @return 
+ *
+ *
+        curl_easy_setopt(curl, CURLOPT_POST, true);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, s1.data.size());
+        curl_easy_setopt(curl, CURLOPT_READFUNCTION, QBReader);
+        curl_easy_setopt(curl, CURLOPT_READDATA, &s1);
+ *
+ * @return
  */
 size_t QBReader(char* ptr, size_t size, size_t nmemb, void* userdata) {
 	auto readMe = (QBReaderSt*)userdata;
@@ -161,10 +161,10 @@ CURL* CurlKeeper::get() const {
 		if (line.length() > 0) {
 			auto found = line.indexOf(u":");
 			if (found > 0) {
-				auto value = line.mid(found + 1);
+				auto value = line.mid(found + 2);
 				auto key   = line.left(found);
 				// auto k      = key.toString();
-				header[key] = value;
+				header.insert({key, value});
 			}
 		}
 	}
@@ -248,6 +248,7 @@ CurlCallResult urlGetContent2(const QByteArray& url, bool quiet, CURL* curl) {
 	curlTimer(result.timing, useMe);
 	if (result.errorCode == CURLE_OK) {
 		result.ok     = true;
+		curl_easy_getinfo (useMe, CURLINFO_RESPONSE_CODE, &result.httpCode);
 		result.header = parseHeader(result.headerRaw);
 	} else if (!quiet) {
 		qDebug().noquote() << "For:" << url << "\n " << errbuf << QStacker16Light();

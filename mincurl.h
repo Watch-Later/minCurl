@@ -1,9 +1,9 @@
 #pragma once
 
 #include "curl/curl.h"
+#include "mapExtensor/mapV2.h"
 #include <QByteArray>
 #include <QString>
-#include <map>
 
 #define QSL(str) QStringLiteral(str)
 
@@ -107,7 +107,7 @@ class CurlKeeper : private NonCopyable {
 struct CaseInsensitiveCompare {
 	bool operator()(QStringView a, QStringView b) const noexcept;
 };
-using Header = std::map<QStringView, QStringView, CaseInsensitiveCompare>;
+using Header = mapV2<QStringView, QStringView, CaseInsensitiveCompare>;
 struct CurlCallResult {
 	CurlCallResult();
 	QString  errorMsg;
@@ -119,7 +119,8 @@ struct CurlCallResult {
 	// Keep raw as can be binary stuff
 	QByteArray result;
 	CURLTiming timing;
-	bool       ok = false;
+	long       httpCode = 0;
+	bool       ok        = false;
 };
 
 /**
