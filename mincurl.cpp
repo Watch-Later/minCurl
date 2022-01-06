@@ -230,7 +230,9 @@ CurlCallResult urlGetContent2(const QByteArray& url, bool quiet, CURL* curl) {
 		useMe = curl_easy_init();
 		curl_easy_setopt(useMe, CURLOPT_TIMEOUT, 60); // 1 minute, if you do not like use you own curl
 	}
-	curl_easy_setopt(useMe, CURLOPT_URL, url.constData());
+	if (!url.isEmpty()) {
+		curl_easy_setopt(useMe, CURLOPT_URL, url.constData());
+	}
 
 	curl_easy_setopt(useMe, CURLOPT_WRITEDATA, &result.result);
 	curl_easy_setopt(useMe, CURLOPT_WRITEFUNCTION, QBWriter);
@@ -247,8 +249,8 @@ CurlCallResult urlGetContent2(const QByteArray& url, bool quiet, CURL* curl) {
 	result.errorMsg  = errbuf;
 	curlTimer(result.timing, useMe);
 	if (result.errorCode == CURLE_OK) {
-		result.ok     = true;
-		curl_easy_getinfo (useMe, CURLINFO_RESPONSE_CODE, &result.httpCode);
+		result.ok = true;
+		curl_easy_getinfo(useMe, CURLINFO_RESPONSE_CODE, &result.httpCode);
 		result.header = parseHeader(result.headerRaw);
 	} else if (!quiet) {
 		qDebug().noquote() << "For:" << url << "\n " << errbuf << QStacker16Light();
@@ -273,6 +275,10 @@ CurlCallResult::CurlCallResult() {
 
 QString CurlCallResult::getError() const {
 	return curl_easy_strerror(errorCode);
+}
+
+QString CurlCallResult::packDbgMsg() const {
+	qDebug().noquote() << "implement me" << QStacker16Light();
 }
 
 CurlForm::CurlForm(CURL* _curl) {

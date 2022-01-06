@@ -74,9 +74,9 @@ class CurlHeader : private NonCopyable {
 class CurlForm : private NonCopyable {
       public:
 	CurlForm(CURL* _curl);
-	;
 
-	           operator curl_mime*() const;
+	operator curl_mime*() const;
+
 	curl_mime* get() const;
 
 	void add(const QString& name, const QString& value);
@@ -95,8 +95,13 @@ class CurlKeeper : private NonCopyable {
       public:
 	CurlKeeper();
 	~CurlKeeper();
+	CurlHeader header;
 
-	      operator CURL*() const;
+	operator CURL*() const;
+
+	//I have no idea how to find the used url !
+	QString url;
+
 	CURL* get() const;
 
       private:
@@ -120,7 +125,8 @@ struct CurlCallResult {
 	QByteArray result;
 	CURLTiming timing;
 	long       httpCode = 0;
-	bool       ok        = false;
+	bool       ok       = false;
+	QString    packDbgMsg() const;
 };
 
 /**
