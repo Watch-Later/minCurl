@@ -73,6 +73,16 @@ QString CURLTiming::print() const {
 	return line;
 }
 
+QString CURLTiming::print2() const {
+	static const QString skel = R"(    namelookup_time => %1
+    connect_time => %2
+    pretransfer_time => %3
+    starttransfer_time => %4
+    total_time => %5
+)";
+	return skel.arg(dnsTime).arg(connTime).arg(preTransfer).arg(startTtransfer).arg(totalTime);
+}
+
 CURLTiming::CURLTiming(CURL* curl) {
 	curlTimer(*this, curl);
 }
@@ -226,12 +236,14 @@ CurlCallResult urlGetContent2(const QByteArray& url, bool quiet, CURL* curl) {
 	CurlCallResult result;
 	char           errbuf[CURL_ERROR_SIZE] = {0};
 	CURL*          useMe                   = curl;
+
 	if (!useMe) {
 		useMe = curl_easy_init();
 		curl_easy_setopt(useMe, CURLOPT_TIMEOUT, 60); // 1 minute, if you do not like use you own curl
 	}
 	if (!url.isEmpty()) {
 		curl_easy_setopt(useMe, CURLOPT_URL, url.constData());
+		result.url = url;
 	}
 
 	curl_easy_setopt(useMe, CURLOPT_WRITEDATA, &result.result);
@@ -250,6 +262,14 @@ CurlCallResult urlGetContent2(const QByteArray& url, bool quiet, CURL* curl) {
 	curlTimer(result.timing, useMe);
 	if (result.errorCode == CURLE_OK) {
 		result.ok = true;
+
+		char* ip = nullptr;
+		if (curl_easy_getinfo(curl, CURLINFO_PRIMARY_IP, &ip) && ip) {
+			result.ip.fromLocal8Bit(ip);
+		} else {
+			result.ip = "127.0.0.1";
+		}
+
 		curl_easy_getinfo(useMe, CURLINFO_RESPONSE_CODE, &result.httpCode);
 		result.header = parseHeader(result.headerRaw);
 	} else if (!quiet) {
@@ -278,7 +298,14 @@ QString CurlCallResult::getError() const {
 }
 
 QString CurlCallResult::packDbgMsg() const {
-	qDebug().noquote() << "implement me" << QStacker16Light();
+	static const QString skel = R"(
+Url: %1
+Ip: %2 | Response: %3
+Header: %4
+Timing: %5
+)";
+	auto                 msg  = skel.arg(url, ip).arg(this->httpCode).arg(header.serialize(), timing.print2());
+	return msg;
 }
 
 CurlForm::CurlForm(CURL* _curl) {
@@ -313,4 +340,13 @@ CurlForm::~CurlForm() {
 
 CurlForm::operator curl_mime*() const {
 	return form;
+}
+
+QString Header::serialize() const {
+	QStringList list;
+	for (auto [key, value] : *this) {
+		auto term = QSL("%1=%2").arg(key, value);
+		list.append(term);
+	}
+	return list.join("\n");
 }

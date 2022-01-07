@@ -21,6 +21,7 @@ struct CURLTiming {
 	double  speed          = 0;
 	double  trxByte        = 0;
 	QString print() const;
+	QString print2() const;
 	CURLTiming() = default;
 	CURLTiming(CURL* curl);
 	void read(CURL* curl);
@@ -112,15 +113,21 @@ class CurlKeeper : private NonCopyable {
 struct CaseInsensitiveCompare {
 	bool operator()(QStringView a, QStringView b) const noexcept;
 };
-using Header = mapV2<QStringView, QStringView, CaseInsensitiveCompare>;
+class Header : public mapV2<QStringView, QStringView, CaseInsensitiveCompare> {
+      public:
+	QString serialize() const;
+};
+
 struct CurlCallResult {
 	CurlCallResult();
 	QString  errorMsg;
 	QString  getError() const;
 	CURLcode errorCode;
+	QString  ip;
 	// used to keep alive all the QStringView
 	QString headerRaw;
 	Header  header;
+	QString url;
 	// Keep raw as can be binary stuff
 	QByteArray result;
 	CURLTiming timing;
